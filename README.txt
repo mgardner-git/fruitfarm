@@ -1,8 +1,7 @@
-# fruitfarm
-A replication of some business processes in the context of a fruit farm.
-react.js
+
+Fruitfarm. A business simulation.
+
+react
 mysql
-react libraries
- - mysql2
- - .env
- 
+mysql2
+Login based on https://www.youtube.com/watch?v=X3qyxo_UTR4  

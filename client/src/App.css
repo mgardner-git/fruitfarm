@@ -1,0 +1,17 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.hide {
+  display:none;
+}
+
+.offscreen {
+  position: absolute;
+  left: 15000px;
+}

@@ -60,39 +60,43 @@ const Register = () => {
                 {errorMessage}
             </p>
             <h1>Register</h1>
-            <label htmlFor="username">Username:</label>
-            <span className={validName ? "valid" :"hide" }>
-                <FontAwesomeIcon icon = {faCheck} />
-            </span>
-            <span className={validName || !user ? "hide" : "invalid"} >
-                <FontAwesomeIcon icon = {faTimes}/>
-            </span>
-            <input type="text" id="username"
-            ref = {userRef}
-            autoComplete = "off"
-            onChange = {(e) => setUser(e.target.value)}
-            required
-            aria-invalid={validName ? "false" : "true"}
-            aria-describedby = "uidnote"
-            onFocus = {() => setUserFocus(true)}
-            onBlur = {()=> setUserFocus(false)}
-            />
-            <label htmlFor = "password">Password:
-                <span className={validPassword ? "valid" :"hide" }>
+            <section>
+                <label htmlFor="username">Username:</label>
+                <span className={validName ? "valid" :"hide" }>
                     <FontAwesomeIcon icon = {faCheck} />
                 </span>
-                <span className={validPassword || ! password ? "hide" : "invalid"} >
+                <span className={validName || !user ? "hide" : "invalid"} >
                     <FontAwesomeIcon icon = {faTimes}/>
                 </span>
-            </label>
-            
-            <input type="password" id="password" 
-            onChange = {(e) => setPassword(e.target.value)}
-            required 
-            aria-invalid={validPassword ? "false" : "true"}
-            aria-describedby="pwdNote"
-            onFocus = {() => setPasswordFocus(true)}
-            onBlur = {() => setPasswordFocus(false)} />
+                <input type="text" id="username"
+                ref = {userRef}
+                autoComplete = "off"
+                onChange = {(e) => setUser(e.target.value)}
+                required
+                aria-invalid={validName ? "false" : "true"}
+                aria-describedby = "uidnote"
+                onFocus = {() => setUserFocus(true)}
+                onBlur = {()=> setUserFocus(false)}
+                />
+            </section>
+            <section>
+                <label htmlFor = "password">Password:
+                    <span className={validPassword ? "valid" :"hide" }>
+                        <FontAwesomeIcon icon = {faCheck} />
+                    </span>
+                    <span className={validPassword || ! password ? "hide" : "invalid"} >
+                        <FontAwesomeIcon icon = {faTimes}/>
+                    </span>
+                </label>
+                
+                <input type="password" id="password" 
+                onChange = {(e) => setPassword(e.target.value)}
+                required 
+                aria-invalid={validPassword ? "false" : "true"}
+                aria-describedby="pwdNote"
+                onFocus = {() => setPasswordFocus(true)}
+                onBlur = {() => setPasswordFocus(false)} />
+            </section>
             <p id = "uidnote" className = {userFocus && user && !validName ? "instructions" : "offscreen"}>
                 <FontAwesomeIcon icon = {faInfoCircle} />
                 4 to 24 characters. <br />

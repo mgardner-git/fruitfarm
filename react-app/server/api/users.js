@@ -18,9 +18,11 @@ router.get('/auth', (req, res) => {
   console.log(password);
   var result = true; //TODO: Authenticate
   if (result) {
-    next();
+    res.json("authenticated");
+    console.log("authenticated")
   } else {
-    next("login");
+    res.json("failed");
+    console.log("failed");
   }
 });
 
@@ -30,4 +32,4 @@ router.post('/register', (req,res) => {
     console.log("Register " + userId);
 });
 
-export default router;
+module.exports=router;

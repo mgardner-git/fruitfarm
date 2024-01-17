@@ -1,0 +1,41 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.hide {
+  display:none;
+}
+
+.offscreen {
+  position: absolute;
+  left: 15000px;
+}
+#root {
+  margin: 5px;
+}
+#header {  
+  border: 1px solid lavender;
+}
+#wrapper {
+  display: flex;
+  flex-direction: row;
+  
+}
+
+#nav {
+  flex-grow: 1;
+}
+#nav li 
+{
+  text-align: left;
+}
+
+#content {
+  flex-grow: 5;
+  border: 1px solid blue;
+}

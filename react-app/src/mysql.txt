@@ -1,0 +1,17 @@
+
+drop database  if exists fruitfarm;
+
+create database fruitfarm;
+use fruitfarm;
+
+#TODO Encryption?
+create table users (
+    username varchar(20) primary key not null,
+    password varchar(20) not null,
+    email varchar(30) not null,
+    role varchar(20) not null
+);
+
+
+insert into users (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
+insert into users (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");

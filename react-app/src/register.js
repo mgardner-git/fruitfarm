@@ -1,7 +1,10 @@
 import React from "react";
+import Axios from "axios";
 import { useRef, useState, useEffect } from "react";
 import {faCheck, faTimes, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {Link} from 'react-router-dom';
+
 
 const USER_REGEX = /^[a-zA-z][a-zA-Z0-9-_]{4,16}$/
 const PWD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{4,16}$/;;
@@ -17,6 +20,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [validPassword, setValidPassword] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
+
+  const [email, setEmail] = useState('');
 
   const [matchPassword, setMatchPassword] = useState('');
   const [validMatch, setValidMatch] = useState(false);
@@ -50,6 +55,22 @@ const Register = () => {
     if (!check1 || !check2) {
         setErrorMessage("Invalid Entry");
         return;
+    } else {
+      var postBody={
+        userId: user,
+        password: password,
+        email: email
+      }
+      Axios.post("/api/users/register",  postBody).then(function(response) {
+        console.log(response);
+        console.log(response.status);
+        if (response.status != 500){
+          setSuccess(true);
+        } else {
+          setErrorMessage(JSON.stringify(response));
+          
+        }        
+      });
     }
   }
 
@@ -97,10 +118,18 @@ const Register = () => {
                 onFocus = {() => setPasswordFocus(true)}
                 onBlur = {() => setPasswordFocus(false)} />
             </section>
+            <section>
+              <label htmlFor = "email">Email:</label>
+              <input type="email" id = "email" onChange={(e)=>setEmail(e.target.value)}></input>
+            </section>
             <p id = "uidnote" className = {userFocus && user && !validName ? "instructions" : "offscreen"}>
                 <FontAwesomeIcon icon = {faInfoCircle} />
                 4 to 24 characters. <br />
                 Letters, numbers, underscores, hyphens allowed.            
+            </p>
+            <p id = "success" className = {success ? "success":"offscreen"}>
+              You have registered as {user}. <br/>
+              <Link to="/login">Login</Link>
             </p>
             <button disabled = {!validName || !validPassword? true : false}>Sign Up</button>
         </form>

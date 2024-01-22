@@ -54,13 +54,15 @@ router.post('/register', (req,res) => {
     const values = [
       req.body.userId,
       req.body.password,
-      req.body.email ? req.body.email : "-"
+      req.body.email ? req.body.email : "-",
+      'customer'
     ];
-    const sql = "INSERT INTO USERS ('username', 'email', 'password') values (?,?,?)";
-    connection.execute(sql, [values], (err, result,fields) => {
+    const sql = "INSERT INTO USERS (username, password, email, role) values (?,?,?,?)";
+    connection.query(sql, values, (err, result,fields) => {
       if (err) {
         console.log(err);
-        return res.json({Message: "Error Authenticating"}) ;
+        return res.status(500);
+        res.json({error: "Error in registration"});
       }else {
         return res.json(result);
       }

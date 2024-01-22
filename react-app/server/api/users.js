@@ -4,22 +4,14 @@ const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
+const {connect} = require('./connection');
+const connection = connect();
 
 function verifyLoggedIn(request, response, next) {
     console.log("verifying logged in");
     next();
 }
-
-
 router.use(verifyLoggedIn);
-
-//TODO> ENV FILES
-const connection =  mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root", 
-  database: "fruitfarm"
-});
 
 router.post('/auth', (req, res) => {
   var userId = req.body.userId;

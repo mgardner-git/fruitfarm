@@ -15,3 +15,29 @@ create table users (
 
 insert into users (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
 insert into users (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");
+
+
+
+create table location (
+    id int not null primary key auto_increment,
+    name varchar(20),
+    latitude decimal(9,6),
+    longitude decimal(9,6),
+    address varchar(50)
+);
+
+
+insert into location (name, latitude, longitude, address) values ('las vegas', 36.1716, -115.1391, "5525 w el parque las vegas, nv 89146");
+insert into location (name, latitude, longitude, address) values ('Phoenix', 33.4484, -112.0740,  "1700 W Washington St, Phoenix, AZ, 85007");
+
+#Product for sale
+create table produce (
+    id int not null primary key auto_increment,
+    name varchar(20),
+    price double not null,
+    locationId int,
+    foreign key locationId references location(id)
+);
+
+insert into produce (name, price, locationId) values ("fuji apples", 1.00, 1);
+insert into produce (name, price, locationId) values ("bananas", .89, 1);

@@ -5,7 +5,7 @@ create database fruitfarm;
 use fruitfarm;
 
 #TODO Encryption?
-create table users (
+create table user (
     username varchar(20) primary key not null,
     password varchar(20) not null,
     email varchar(30) not null,
@@ -15,8 +15,6 @@ create table users (
 
 insert into users (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
 insert into users (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");
-
-
 
 create table location (
     id int not null primary key auto_increment,
@@ -30,14 +28,39 @@ create table location (
 insert into location (name, latitude, longitude, address) values ('las vegas', 36.1716, -115.1391, "5525 w el parque las vegas, nv 89146");
 insert into location (name, latitude, longitude, address) values ('Phoenix', 33.4484, -112.0740,  "1700 W Washington St, Phoenix, AZ, 85007");
 
-#Product for sale
+#Base fruit type
 create table produce (
     id int not null primary key auto_increment,
     name varchar(20),
+    description TEXT
+    
+);
+insert into produce (name, description) values ("fuji apples", "yummy crisp fuji apples");
+insert into produce (name, description) values ("bananas", "yellow bananas");
+
+
+#product at a location, including quantity available
+create table inventory (
+    id int not null primary key auto_increment,
     price double not null,
     locationId int,
-    foreign key locationId references location(id)
+    produceId int,
+    quantityAvailable int,
+    foreign key (locationId) references location(id), 
+    foreign key (produceId) references produce(id)
 );
 
-insert into produce (name, price, locationId) values ("fuji apples", 1.00, 1);
-insert into produce (name, price, locationId) values ("bananas", .89, 1);
+#fuji apples are on sale for $1 at las vegas
+insert into inventory (price, locationId, produceId) values (1, 1, 1); 
+insert into inventory (price, locationId, produceId) values (.89, 1, 2);
+
+#each row documents how much of what a user has loaded to cart
+create table cart (
+    id int not null primary key auto_increment,
+    quantity int not null,
+    inventoryId,
+    userId,
+    foreign key (inventoryid) references inventory(id),
+    foreign key (userId) references user
+
+);

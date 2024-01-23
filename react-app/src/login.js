@@ -1,9 +1,9 @@
-import {useRef, useState, useEffect, useContext } from 'react';
+import {useRef, useState, useEffect} from 'react';
 import Axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
 Axios.defaults.withCredentials=true;
-const LOGIN_URL = '/auth';
+
 
 export default function Login() {
     

@@ -13,8 +13,8 @@ create table user (
 );
 
 
-insert into users (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
-insert into users (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");
+insert into user (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
+insert into user (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");
 
 create table location (
     id int not null primary key auto_increment,
@@ -42,7 +42,7 @@ insert into produce (name, description) values ("bananas", "yellow bananas");
 #product at a location, including quantity available
 create table inventory (
     id int not null primary key auto_increment,
-    price double not null,
+    price decimal(10,2) not null,
     locationId int,
     produceId int,
     quantityAvailable int,
@@ -58,9 +58,10 @@ insert into inventory (price, locationId, produceId) values (.89, 1, 2);
 create table cart (
     id int not null primary key auto_increment,
     quantity int not null,
-    inventoryId,
-    userId,
+    inventoryId int,
+    username varchar(20),
     foreign key (inventoryid) references inventory(id),
-    foreign key (userId) references user
-
+    foreign key (username) references user(username)
 );
+
+insert into cart(quantity, inventoryId, username) values (2, 1, 'jill');

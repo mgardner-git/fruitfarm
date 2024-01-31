@@ -13,7 +13,7 @@ const Purchase = () => {
   const [locations, setLocations] = useState([]);
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [cart, setCart] = useState({}); 
+  const [cart, setCart] = useState([]); 
   
   useEffect(() => {
     axios.get("/api/locations/").then(function(response) {
@@ -45,7 +45,7 @@ const Purchase = () => {
     //go get the cart and match it to products in this location
     axios.get("/api/cart/").then(function(response) {
        if (response.status == 200) {
-        var newCart  = {};
+        var newCart  = [];
         for (var index=0; index < response.data.length; index++) {
           var cartItem = response.data[index];
           if (cartItem.locationId == myLocation){
@@ -54,8 +54,13 @@ const Purchase = () => {
               inventoryId: cartItem.inventoryId,
               quantity: cartItem.quantity
             };
-            newCart[cartItem.inventoryId] = cartRecord;
+            newCart.push(cartRecord);
+            var relatedInput = document.getElementById(cartItem.inventoryId);
+            if (relatedInput) {
+               relatedInput.setAttribute("value", cartItem.quantity);  //should just do this once.
+            }
           }
+
         }
         setCart(newCart);
         console.log(cart);
@@ -65,17 +70,37 @@ const Purchase = () => {
     });
   }, [products])
 
+  //occurs on each change of quantity
   function updateQuantity(inventoryId, quantity) {
-    if (cart[inventoryId]) {
-      cart[inventoryId].quantity = quantity;
-    } else {
+    console.log("Update " + inventoryId + "," + quantity);
+    var found = false;
+    for (let index=0; index < cart.length; index++) {
+      if (cart[index].inventoryId == inventoryId) {
+        cart[index].quantity = quantity;
+        found = true;
+      }
+    }
+    if (!found) {
       cart.push({
         inventoryId: inventoryId,
         quantity: quantity
       });
     }
-    console.log(cart);
+    //console.log(cart);
   }  
+
+  //occurs only when they click update cart
+  function updateCart(e) {
+    e.preventDefault();
+    axios.put("/api/cart/", cart).then(function(response) {
+      if (response.status == 200){
+        alert("Cart Updated");  //TODO: Toast Library
+      } else {
+        setErrorMessage(JSON.stringify(response));        
+      }
+    });
+    return true;
+  }
 
   
   return (
@@ -106,9 +131,9 @@ const Purchase = () => {
                       <td>{product.quantityAvailable}</td>
                       <td>{product.price}</td>
                       <td>
-                        <input type="number" 
+                        <input type="number" id = {product.id}
                           onChange= {(e) => updateQuantity(product.id, e.target.value)}
-                          value = {cart[product.id]? cart[product.id].quantity : 0}>
+                          >
                         </input>
                       </td>
                     </tr>
@@ -116,13 +141,15 @@ const Purchase = () => {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td align = "right" colspan = "4">                      
-                      <Link to="/cart">Login</Link>                      
+                    <td align = "right" colspan = "4">
+                      <button onClick = {updateCart}>Update Cart</button>
+                      
                     </td>
                   </tr>
                 </tfoot>
             </table>
            }
+           <Link to="/cart">Go To Cart</Link>
         </div>
       </ProtectedRoute>
 )}

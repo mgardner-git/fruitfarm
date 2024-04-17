@@ -58,10 +58,57 @@ insert into inventory (price, locationId, produceId) values (.89, 1, 2);
 create table cart (
     id int not null primary key auto_increment,
     quantity int not null,
-    inventoryId int,
+    inventoryId int not null,
     username varchar(20),
     foreign key (inventoryid) references inventory(id),
     foreign key (username) references user(username)
 );
 
 insert into cart(quantity, inventoryId, username) values (2, 1, 'jill');
+
+#links to shipping addresses of customers AND locations of warehouses
+create table address (
+    id int not null primary key auto_increment,
+    street1 varchar(30),
+    street2 varchar(20),
+    city varchar(20),
+    state varchar(2),
+    zip varchar(5), 
+    locationId int,
+    userId varchar(20),
+    foreign key (locationId) references location(id),
+    foreign key (userId) references user(username)
+);
+
+create table phonenumber (
+    id int not null primary key auto_increment,
+    number varchar (10)
+    locationId int,
+    userId, varchar(20),
+    foreign key (locationId) references location(id),
+    foreign key (userId) references user(username)
+)
+
+create table  purchase (    
+
+    id int not null primary key auto_increment,
+    userId varchar(20) not null,
+    locationId int not null,
+    destination_address int not null,
+    foreign key (destination_address) references address(id),
+    foreign key (locationId) references location(id),
+    foreign key (userId) references user(username)
+);
+
+
+
+
+create table lineItem (
+    id int not null primary key auto_increment,
+    purchaseId int not null,
+    produceId int not null,
+    price decimal(10,2) not null,
+    quantity int not null,
+    foreign key(purchaseId) references purchase(id),
+    foreign key(produceId) references produce(id)
+);

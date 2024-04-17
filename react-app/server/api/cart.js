@@ -65,30 +65,30 @@ router.get('/byLocation', (req, res) => {
               for (var index=0; index < result.length; index++) {              
                 let row = result[index];
                 
-                if (locationBlock != null && locationBlock.locationId != row.locationId) {                  
-                  returnObj.locations.push(locationBlock);
-                  locationBlock =  {items:[], total:0};
-                }
-                else if (locationBlock == null) {
-                  locationBlock = locationBlock = {items:[], total:0};
-                }
-                returnObj.locations.push(locationBlock);                    
-                
-
+                locationBlock =  {items:[], total:0};
                 locationBlock.locationId =  row.locationId;
                 locationBlock.name = row.locationName;
-                locationBlock.total += row.price*row.quantity; //TODO: Do this calculation in database
-                if (index == result.length-1 || locationBlock.locationId != result[index+1].locationId){
-                  locationBlock.total = dollarFormat.format(locationBlock.total);
+
+                while(row && row.locationId == currentLocId && index < result.length) {
+                  
+                  total += row.price*row.quantity;
+                  locationBlock.items.push({
+                    id: row.inventoryId,
+                    name: row.name,
+                    quantity: row.quantity, 
+                    total: dollarFormat.format(row.quantity*row.price),
+                    price: dollarFormat.format(row.price)
+                  });
+
+                  locationBlock.total += row.price*row.quantity; //TODO: Do this calculation in database  
+                  index++;
+                  currentLocId = row.locationId;
+                  row = result[index];  //may be undefined
                 }
-                total += row.price*row.quantity;
-                locationBlock.items.push({
-                  id: row.inventoryId,
-                  name: row.name,
-                  quantity: row.quantity, 
-                  total: dollarFormat.format(row.quantity*row.price),
-                  price: dollarFormat.format(row.price)
-                });
+                returnObj.total += locationBlock.total;
+                locationBlock.total = dollarFormat.format(locationBlock.total);
+                returnObj.locations.push(locationBlock);    
+
               }
               returnObj.total = dollarFormat.format(total);
             }//>0

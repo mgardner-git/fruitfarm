@@ -29,16 +29,18 @@ const Cart = () => {
     <ProtectedRoute roles="customer manager">
           <h1>Cart</h1>
           <table id = "cart">
-            <thead>
-              <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th></tr>
-            </thead>
+            
+              
+            
             <tbody>
               {cart.locations? cart.locations.map((location) => (
                 <>
                   <tr>
-                    <td colspan = "4"><h3>{location.name}</h3></td>
+                    <td colspan = "4" align="left"><h3>{location.name}</h3></td>
                   </tr>
+                  <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th></tr>
                   {location.items.map((item) => (
+
                       <tr>
                         <td>{item.name}</td>
                         <td>{item.price}</td>
@@ -55,7 +57,7 @@ const Cart = () => {
                 </>
               )): ""}
               <tr>
-                <td colspan="3" align = "right">Order Total:</td>
+                <td colspan="3" align = "right"><h3>Order Total:</h3></td>
                 <td>{cart.total}</td>
               </tr>
             </tbody>

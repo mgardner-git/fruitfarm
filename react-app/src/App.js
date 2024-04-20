@@ -6,6 +6,8 @@ import Nav from "./nav";
 import Purchase from "./purchase";
 import MyOrders from "./myOrders";
 import Cart from "./cart";
+import Order from "./order";
+import Order2 from "./order2";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 function App() {
@@ -23,7 +25,9 @@ function App() {
               <Route path = "myOrders" element = {<MyOrders/>}></Route>           
               <Route path = "/" element = {<Purchase />}></Route>
               <Route path = "login" element = {<Login/>}></Route>
-              <Route path = "register" element = {<Register/>}></Route>              
+              <Route path = "register" element = {<Register/>}></Route>       
+              <Route path = "order" element = {<Order/>}></Route>       
+              <Route path = "order2" element = {<Order2/>}></Route>
             </Routes>          
           </div>
         </BrowserRouter> 

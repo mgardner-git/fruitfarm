@@ -24,9 +24,24 @@ create table location (
     address varchar(50)
 );
 
+#links to shipping addresses of customers AND locations of warehouses
+create table address (
+    id int not null primary key auto_increment,
+    street1 varchar(30),
+    street2 varchar(20),
+    city varchar(20),
+    state varchar(2),
+    zip varchar(5), 
+    locationId int,
+    userId varchar(20),
+    foreign key (locationId) references location(id),
+    foreign key (userId) references user(username)
+);
+
 
 insert into location (name, latitude, longitude, address) values ('las vegas', 36.1716, -115.1391, "5525 w el parque las vegas, nv 89146");
 insert into location (name, latitude, longitude, address) values ('Phoenix', 33.4484, -112.0740,  "1700 W Washington St, Phoenix, AZ, 85007");
+insert into address (street1, city, state, zip, userId) values ("123 e st.", "las vegas", "nv", "12345", "jill");
 
 #Base fruit type
 create table produce (
@@ -66,49 +81,48 @@ create table cart (
 
 insert into cart(quantity, inventoryId, username) values (2, 1, 'jill');
 
-#links to shipping addresses of customers AND locations of warehouses
-create table address (
+create table phonenumber (
     id int not null primary key auto_increment,
-    street1 varchar(30),
-    street2 varchar(20),
-    city varchar(20),
-    state varchar(2),
-    zip varchar(5), 
+    number varchar (10),
     locationId int,
     userId varchar(20),
     foreign key (locationId) references location(id),
     foreign key (userId) references user(username)
 );
 
-create table phonenumber (
-    id int not null primary key auto_increment,
-    number varchar (10)
-    locationId int,
-    userId, varchar(20),
-    foreign key (locationId) references location(id),
-    foreign key (userId) references user(username)
-)
-
-create table  purchase (    
-
+create table  orders (    
     id int not null primary key auto_increment,
     userId varchar(20) not null,
-    locationId int not null,
+    locationId int not null,    
     destination_address int not null,
     foreign key (destination_address) references address(id),
     foreign key (locationId) references location(id),
     foreign key (userId) references user(username)
 );
 
+#1. Approval
+#2. Invoice
+#3. Paid
+#2. Fulfillment
+#3. Shipped
+#4. Received
+#5. closed
+create table order_status (
+    id int not null primary key auto_increment,
+    status int not null,
+    orderId int not null,
+    username varchar(20) not null,
+    foreign key (orderId) references orders(id),
+    foreign key (username) references user(username)
 
-
+);
 
 create table lineItem (
     id int not null primary key auto_increment,
-    purchaseId int not null,
-    produceId int not null,
+    orderId int not null,
+    inventoryId int not null,
     price decimal(10,2) not null,
     quantity int not null,
-    foreign key(purchaseId) references purchase(id),
-    foreign key(produceId) references produce(id)
+    foreign key (orderId) references orders(id),
+    foreign key (inventoryId) references inventory(id)
 );

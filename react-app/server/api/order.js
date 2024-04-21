@@ -86,6 +86,11 @@ async function createOrder(order) {
         //now create the status change object and tie it to the purchasing user
         const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username) values (?,?,?)";
         let statusResult = await connection.promise().query(statusSql, [1, createdOrder.id, order.username]);
+
+        //now delete all the cart items at that location
+        const deleteSql = "delete from cart where id in ( select id from (select c.id from cart c inner join inventory i on (c.inventoryId = i.id) where c.username=? and i.locationId=?) as c1)";
+        let deleteCartResult = await connection.promise().query(deleteSql, [order.username, order.locationId]);
+
         createdOrder.status = 1; 
     }
     

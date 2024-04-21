@@ -58,16 +58,17 @@ insert into produce (name, description) values ("bananas", "yellow bananas");
 create table inventory (
     id int not null primary key auto_increment,
     price decimal(10,2) not null,
-    locationId int,
-    produceId int,
+    locationId int not null,
+    produceId int not null,
     quantityAvailable int,
     foreign key (locationId) references location(id), 
     foreign key (produceId) references produce(id)
 );
 
 #fuji apples are on sale for $1 at las vegas
-insert into inventory (price, locationId, produceId) values (1, 1, 1); 
-insert into inventory (price, locationId, produceId) values (.89, 1, 2);
+insert into inventory (price, locationId, produceId, quantityAvailable) values (1, 1, 1,4); 
+insert into inventory (price, locationId, produceId, quantityAvailable) values (.89, 2, 2,10);
+
 
 #each row documents how much of what a user has loaded to cart
 create table cart (
@@ -80,6 +81,7 @@ create table cart (
 );
 
 insert into cart(quantity, inventoryId, username) values (2, 1, 'jill');
+insert into cart(quantity, inventoryId, username) values (2,2, 'jill');
 
 create table phonenumber (
     id int not null primary key auto_increment,

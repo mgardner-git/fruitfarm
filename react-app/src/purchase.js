@@ -14,6 +14,7 @@ const Purchase = () => {
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [cart, setCart] = useState([]); 
+  const [errors, setErrors] = useState([]);
   
   useEffect(() => {
     axios.get("/api/locations/").then(function(response) {
@@ -70,6 +71,36 @@ const Purchase = () => {
     });
   }, [products])
 
+
+  function findProduct(inventoryId) {
+    for (let index=0; index < products.length; index++) {
+      let checkProduct = products[index];
+      if (checkProduct.id === inventoryId) {
+        return index;
+      }
+    }
+    return null;
+  }
+  function enforceMaxQuantity() {
+
+    var isClean = true;
+    for (let index=0; index < cart.length; index++) {
+      let checkCart = cart[index];
+      let productIndex = findProduct(checkCart.inventoryId);
+      let checkProduct = products[productIndex];
+      let isError = checkCart.quantity > checkProduct.quantityAvailable;
+      var newErrors = [];
+      if (isError) {
+        newErrors[productIndex] = "You can't buy more than " + checkProduct.quantityAvailable;
+        isClean = false;
+      } else {
+        newErrors[productIndex] = null;
+      }
+    }
+    setErrors(newErrors);
+    return isClean;
+  }
+
   //occurs on each change of quantity
   function updateQuantity(inventoryId, quantity) {
     console.log("Update " + inventoryId + "," + quantity);
@@ -86,7 +117,8 @@ const Purchase = () => {
         quantity: quantity
       });
     }
-    //console.log(cart);
+    enforceMaxQuantity();
+    
   }  
 
   //occurs only when they click update cart
@@ -122,10 +154,10 @@ const Purchase = () => {
            {myLocation &&     
             <table id = "fruit"  border='1'>
                 <thead>
-                  <tr><th>Name</th><th>Qty. Available</th><th>Price</th><th>Purchase Quantity</th></tr>
+                  <tr><th>Name</th><th>Qty. Available</th><th>Price</th><th>Purchase Quantity</th><th width = "190"></th></tr>
                 </thead>
                 <tbody>
-                  {products.map((product) => (
+                  {products.map((product,index) => (
                     <tr>
                       <td>{product.name}</td>
                       <td>{product.quantityAvailable}</td>
@@ -136,6 +168,12 @@ const Purchase = () => {
                           >
                         </input>
                       </td>
+                     
+                      <td>
+                        {errors[index]}
+
+                      </td>
+                     
                     </tr>
                   ))}
                 </tbody>
@@ -149,6 +187,7 @@ const Purchase = () => {
                 </tfoot>
             </table>
            }
+           {errors.length}
            <Link to="/cart">Go To Cart</Link>
         </div>
       </ProtectedRoute>

@@ -2,19 +2,18 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
-import { Navigate} from 'react-router-dom';
-import {Link} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 
 const Cart = () => {
-
+  let navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null); 
   const [cart, setCart] = useState({
     locations: []
   }); 
   
   useEffect(() => {
-    axios.get("/api/cart/byLocation").then(function(response) {
+    axios.get("/api/cart/allLocations").then(function(response) {
       
       console.log(response.data);
       if (response.status == 200){
@@ -25,6 +24,10 @@ const Cart = () => {
     });
   }, []);
 
+  function goOrder(locationId, event) {
+    event.preventDefault();
+    navigate("/order?locationId=" + locationId);
+  }
   return (
     <ProtectedRoute roles="customer manager">
           <h1>Cart</h1>
@@ -38,7 +41,12 @@ const Cart = () => {
                   <tr>
                     <td colspan = "4" align="left"><h3>{location.name}</h3></td>
                   </tr>
-                  <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th></tr>
+                  <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th>
+                    <th>
+                      {location.locationId}
+                      <button onClick={(e) => goOrder(location.locationId,e)}>Order</button>
+                    </th>
+                  </tr>
                   {location.items.map((item) => (
 
                       <tr>
@@ -62,7 +70,7 @@ const Cart = () => {
               </tr>
             </tbody>
           </table>
-          <Link to="/order">Purchase</Link>
+          
     </ProtectedRoute>
   )
 }

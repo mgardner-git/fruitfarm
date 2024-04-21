@@ -3,19 +3,24 @@ import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
 import {Link} from 'react-router-dom';
-
+import {useNavigate, useSearchParams} from 'react-router-dom';
 
 const Order = () => {
-
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const locationId = searchParams.get("locationId");
   const [errorMessage, setErrorMessage] = useState(null); 
   const [cart, setCart] = useState({
-    locations: []
+    items: []
   });
   const [address, setAddress] = useState(null);
   const [addresses, setAddresses] = useState([]); 
   const [order, setOrder] = useState(null);
+  
+  
   useEffect(() => {
-    axios.get("/api/cart/byLocation").then(function(response) {
+    
+    axios.get("/api/cart/byLocation/" + locationId).then(function(response) {
       
       console.log(response.data);
       if (response.status == 200){
@@ -48,25 +53,23 @@ const Order = () => {
   return (
     <ProtectedRoute roles="customer manager">
           <h1>Order</h1>
+          <h2>{cart.name}</h2>
           <table id = "cart">
-            
-              
-            
+            <thead>
+              <tr>
+                <th>name</th>  
+                <th>quantity</th>
+                <th>Price</th>                
+              </tr>  
+            </thead>    
             <tbody>
-              {cart.locations? cart.locations.map((location) => (
-                <>
+              {cart.items.map((item) => 
                   <tr>
-                    <td colspan = "4" align="left"><h3>{location.name}</h3></td>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.price}}</td>
                   </tr>
-                  
-                  <tr>
-                    <td colspan="3" align="right">
-                      <h3>Location Total:</h3>
-                    </td>
-                    <td> {location.total}</td>
-                  </tr>
-                </>
-              )): ""}
+              )}
               <tr>
                 <td colspan="3" align = "right"><h3>Order Total:</h3></td>
                 <td>{cart.total}</td>
@@ -82,14 +85,14 @@ const Order = () => {
        
          <button onClick={sendOrder}>Finalize Order</button>
          {order &&
-         <div id ="result">
-            <h2>Orders</h2>
-
-            {order.orders.map((locOrder)=>
-              <div class="order">{locOrder.id}</div>
-            )}
-         </div>
-        }
+          <div id ="result">
+              <h2>Orders</h2>
+                <ul class="order">            
+                    <li>Your order has been registerd with order# {order.id} </li>
+                    <li>You will receive an email when the order has been approved by inventory management.</li>
+                </ul>            
+          </div>
+         }
     </ProtectedRoute>
   );
 }

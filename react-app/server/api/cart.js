@@ -7,9 +7,6 @@ const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 
-router.use(verifyLoggedIn);
-router.get('/byLocation', (req, res) => {
-
     // Create our number formatter.
     const dollarFormat = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -21,6 +18,38 @@ router.get('/byLocation', (req, res) => {
     }); //TODO: Componentize this
 
 
+router.use(verifyLoggedIn);
+router.get("/byLocation/:locationId", async function(req, res) {
+  const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=? and L.id=?";    
+  const locationId = req.params.locationId;
+  let results = await connection.promise().query(sql, [req.user, locationId]);
+  results = results[0];
+  const returnObj = {
+    name: "",
+    items: [],
+    total: 0
+  }
+  for (let index=0; index < results.length; index++) {
+    const row = results[index];
+    returnObj.name = row.locationName;
+    const lineItem = {
+      id : row.id,
+      quantity: row.quantity,
+      price: row.price,
+      name: row.name
+    }
+    returnObj.total += row.price*row.quantity;
+    returnObj.items.push(lineItem);
+  }
+  returnObj.total = dollarFormat.format(returnObj.total);
+  res.status(200);
+  res.json(returnObj);  
+});
+
+router.get('/allLocations', (req, res) => {
+
+
+
     const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=?";
     console.log(sql);
     console.log(req.user);
@@ -29,8 +58,8 @@ router.get('/byLocation', (req, res) => {
             console.log(err);
             res.status(500);
             return res.json(null);
-          }
-          else if (result) {     
+        }
+        else if (result) {     
             res.status(200);     
             /*
             {
@@ -62,12 +91,14 @@ router.get('/byLocation', (req, res) => {
               let locationBlock = null;
               let total = 0;
               
-              for (var index=0; index < result.length; index++) {              
+              //increment occurs only in inner while loop
+              for (var index=0; index < result.length;) {              
                 let row = result[index];
                 
                 locationBlock =  {items:[], total:0};
                 locationBlock.locationId =  row.locationId;
                 locationBlock.name = row.locationName;
+                currentLocId = row.locationId;
 
                 while(row && row.locationId == currentLocId && index < result.length) {
                   
@@ -82,8 +113,8 @@ router.get('/byLocation', (req, res) => {
 
                   locationBlock.total += row.price*row.quantity; //TODO: Do this calculation in database  
                   index++;
-                  currentLocId = row.locationId;
-                  row = result[index];  //may be undefined
+                 
+                  row = result[index];  //may be undefined                   
                 }
                 returnObj.total += locationBlock.total;
                 locationBlock.total = dollarFormat.format(locationBlock.total);

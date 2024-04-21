@@ -40,7 +40,7 @@ const Order = () => {
 
   function sendOrder(event){
     event.preventDefault();
-    axios.post("/api/order/",{address: address.id}).then(function(response) {
+    axios.post("/api/order/" + locationId,{address: address.id}).then(function(response) {
       
       console.log(response.data);
       if (response.status == 200){

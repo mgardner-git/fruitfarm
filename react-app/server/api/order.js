@@ -11,32 +11,23 @@ const {verifyLoggedIn} = require('./verifyLoggedIn');
 
 
 router.use(verifyLoggedIn);
-router.post('/', async function(req, res, next) {
-
-    const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=?";
-    let cartResults = await connection.promise().query(sql, [req.user]);
+router.post('/:locationId', async function(req, res, next) {
+    const locationId = req.params.locationId;
+    const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=? and L.id=?";
+    let cartResults = await connection.promise().query(sql, [req.user, locationId]);
     cartResults = cartResults[0];
     if (cartResults.length > 0){
-        let currentLocId = cartResults[0].locationId;                
-        let responseObject  = {
-            orders: [],
-            total: 0
+
+        let order =  {
+            locationId: locationId,
+            destination_address : req.body.address,
+            username: req.user,
+            items:[], 
+            total:0
         };
-
-
 
         for (var index=0; index < cartResults.length; index++) {              
             let row = cartResults[index];
-            
-            let order =  {
-                locationId: row.locationId,
-                destination_address : req.body.address,
-                username: req.user,
-                items:[], 
-                total:0
-            };
-            
-            while(row && row.locationId == currentLocId && index < cartResults.length) {
             order.total += row.price*row.quantity;
             order.items.push({
                 inventoryId: row.inventoryId,
@@ -45,24 +36,21 @@ router.post('/', async function(req, res, next) {
                 price: row.price
             });  
             index++;
-            row = cartResults[index];
-            }
-            responseObject.total += order.total;
+            row = cartResults[index];            
             
-            let createdOrder = await createOrder(order);
-            if (createdOrder) {
-                responseObject.orders.push(createdOrder); 
-            } else {
-                res.status(500);
-                res.json(null);
-                return null;
-            }
-
+        }    
+        let createdOrder = await createOrder(order);
+        if (createdOrder) {
+            order = createdOrder;
+        } else {
+            res.status(500);
+            res.json(null);
+            return null;
         }
-        console.log(responseObject);
+    
         res.status(200);     
         res.contentType = "application/json";    
-        res.json(responseObject);
+        res.json(order);
         return;
     }
 });

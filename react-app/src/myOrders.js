@@ -24,10 +24,10 @@ const MyOrders = () => {
 
   return (
     <ProtectedRoute roles="customer">
-        <div>myOrders</div>
+        <h2>myOrders</h2>
 
 
-        <table>
+        <table border="1">
           <thead>
             <tr> 
               <th>Id#</th><th>Date</th><th>Status</th><th>Destination</th>

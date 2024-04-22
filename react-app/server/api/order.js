@@ -2,15 +2,53 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
+const moment = require('moment');
 dotenv.config();
 const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 
 
-
+/*
+#1. Approval
+#2. Invoice
+#3. Paid
+#4. Fulfillment
+#5. Shipped
+#6. Received
+#7. closed
+*/
 
 router.use(verifyLoggedIn);
+
+router.get("/myOrders", async function(req, res, next) {
+    const sql = 
+    `select O.id, userId, locationId, destination_address, UNIX_TIMESTAMP(S2.time)*1000 as time , 
+     case 
+       when S2.status=1 then "Awating Approval"
+       when S2.status=2 then "Invoice Sent"
+       when S2.status=3 then "Order Paid, Awaiting Fulfillment"
+       when S2.status=4 then "In Fulfillment"
+       when S2.status=5 then "Shipped"
+       when S2.status=6 then "Received"
+       when S2.status=7 then "Closed"
+    end as status, 
+    S2.username as auth from orders O 
+    inner join (
+        select id, status, time, username, orderId from order_status S
+        where time = 
+            (select MAX(time)
+            from order_status S3
+            where orderId=4) 
+        )
+        S2 on (O.id = S2.orderId)
+        where O.userId = ?
+        `;
+    let orderResults = await connection.promise().query(sql, [req.user]);
+    orderResults = orderResults[0];
+    res.status(200);
+    res.json(orderResults);
+});
 router.post('/:locationId', async function(req, res, next) {
     const locationId = req.params.locationId;
     const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=? and L.id=?";
@@ -84,8 +122,9 @@ async function createOrder(order) {
         createdOrder.items.push(createdLineItem);
 
         //now create the status change object and tie it to the purchasing user
-        const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username) values (?,?,?)";
-        let statusResult = await connection.promise().query(statusSql, [1, createdOrder.id, order.username]);
+        const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
+        var today = moment.format("YYYY-MM-DD HH:mm:ss");
+        let statusResult = await connection.promise().query(statusSql, [1, createdOrder.id, order.username, today]);
 
         //now delete all the cart items at that location
         const deleteSql = "delete from cart where id in ( select id from (select c.id from cart c inner join inventory i on (c.inventoryId = i.id) where c.username=? and i.locationId=?) as c1)";

@@ -122,15 +122,21 @@ const Purchase = () => {
   }  
 
   //occurs only when they click update cart
-  function updateCart(e) {
+  function updateCart(e) {    
     e.preventDefault();
-    axios.put("/api/cart/", cart).then(function(response) {
-      if (response.status == 200){
-        alert("Cart Updated");  //TODO: Toast Library
-      } else {
-        setErrorMessage(JSON.stringify(response));        
-      }
-    });
+    let isClean = enforceMaxQuantity();
+    if (isClean) {
+      axios.put("/api/cart/", cart).then(function(response) {
+        if (response.status == 200){
+          alert("Cart Updated");  //TODO: Toast Library
+        } else {
+          setErrorMessage(JSON.stringify(response));        
+        }      
+      });
+    } else {
+      alert("You have cart errors.")
+      
+    }
     return true;
   }
 
@@ -187,7 +193,6 @@ const Purchase = () => {
                 </tfoot>
             </table>
            }
-           {errors.length}
            <Link to="/cart">Go To Cart</Link>
         </div>
       </ProtectedRoute>

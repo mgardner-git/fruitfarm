@@ -105,15 +105,16 @@ create table  orders (
 #1. Approval
 #2. Invoice
 #3. Paid
-#2. Fulfillment
-#3. Shipped
-#4. Received
-#5. closed
+#4. Fulfillment
+#5. Shipped
+#6. Received
+#7. closed
 create table order_status (
     id int not null primary key auto_increment,
     status int not null,
     orderId int not null,
     username varchar(20) not null,
+    time datetime not null,
     foreign key (orderId) references orders(id),
     foreign key (username) references user(username)
 

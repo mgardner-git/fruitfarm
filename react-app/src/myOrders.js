@@ -40,7 +40,7 @@ const MyOrders = () => {
                 <td>{order.id}</td>
                 <td>{order.time}</td>
                 <td>{order.status}</td>
-                <td>{order.destination_address}</td>
+                <td>{order.street1}&nbsp;{order.street2}&nbsp;{order.city},{order.state}</td>
               </tr>
             ))}
 

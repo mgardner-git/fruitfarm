@@ -23,7 +23,7 @@ router.use(verifyLoggedIn);
 
 router.get("/myOrders", async function(req, res, next) {
     const sql = 
-    `select O.id, userId, locationId, destination_address, UNIX_TIMESTAMP(S2.time)*1000 as time , 
+    `select O.id, O.userId, O.locationId, A.street1, A.street2, A.city, A.state, A.zip, UNIX_TIMESTAMP(S2.time)*1000 as time , 
      case 
        when S2.status=1 then "Awating Approval"
        when S2.status=2 then "Invoice Sent"
@@ -42,8 +42,9 @@ router.get("/myOrders", async function(req, res, next) {
             where orderId=4) 
         )
         S2 on (O.id = S2.orderId)
+        inner join address A on (A.id = O.destination_address) 
         where O.userId = ?
-        `;
+      `;
     let orderResults = await connection.promise().query(sql, [req.user]);
     orderResults = orderResults[0];
     res.status(200);

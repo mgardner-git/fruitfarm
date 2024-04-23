@@ -13,8 +13,9 @@ create table user (
 );
 
 
-insert into user (username, password, role,email) values ('bob', 'bob123', 'manager', "bob@yahoo.com");
+insert into user (username, password, role,email) values ('bob', 'bob123', 'inventoryManager', "bob@yahoo.com");
 insert into user (username, password, role, email) values ('jill', 'jill123', 'customer', "jill@google.com");
+
 
 create table location (
     id int not null primary key auto_increment,

@@ -11,7 +11,7 @@ const nav = () => {
         </li>
         <li><Link to = "/purchase">Purchase Fruit</Link></li>
         <li><Link to = "/myOrders">View Previous Orders</Link></li>
-
+        <li><Link to = "/manageOrders">Approve Orders</Link></li>
     </ul>
   )
 }

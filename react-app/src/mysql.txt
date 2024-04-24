@@ -110,6 +110,7 @@ create table  orders (
 #5. Shipped
 #6. Received
 #7. closed
+#8. Rejected
 create table order_status (
     id int not null primary key auto_increment,
     status int not null,

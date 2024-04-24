@@ -8,7 +8,7 @@ const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 const moment = require('moment');
-
+const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
 
 router.use(verifyLoggedIn);
 //find all orders awaiting approval at a given location
@@ -75,7 +75,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
 router.put("/approve/:orderId", async function(req,res)  {
         const orderId = req.params.orderId;
         const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
-        var today = moment().format("YYYY-MM-DD HH:mm:ss");
+        var today = moment().format(DATE_FORMAT);
         let statusResult = await connection.promise().query(statusSql, [2, orderId, req.user, today]);
         res.status(200);
         res.json({});
@@ -85,7 +85,7 @@ router.put("/approve/:orderId", async function(req,res)  {
 router.put("/fulfill/:orderId", async function(req, res) {
     const orderId = req.params.orderId;
     const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
-    var today = moment().format("YYYY-MM-DD HH:mm:ss");
+    var today = moment().format(DATE_FORMAT);
     let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
     //update quantity available for each line item
 
@@ -98,6 +98,16 @@ router.put("/fulfill/:orderId", async function(req, res) {
         const reduceInvSql = "update inventory I set quantityAvailable = quantityAvailable - ? where id = ?";
         let reduceResult = await connection.promise().query(reduceInvSql, [lineItem.quantity, lineItem.inventoryId]);
     }
+    res.status(200);
+    res.json({});
+});
+
+router.put("/reject/:orderId", async function(req, res) {
+
+    const orderId = req.params.orderId;
+    const statusSql = "INSERT INTO ORDER_STATUS(status, orderId, username, time) values (?,?,?,?)";
+    var today = moment().format(DATE_FORMAT);
+    let statusResult = await connection.promise().query(statusSql, [8,orderId, req.user, today]);
     res.status(200);
     res.json({});
 });

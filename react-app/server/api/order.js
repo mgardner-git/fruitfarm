@@ -32,6 +32,7 @@ router.get("/myOrders", async function(req, res, next) {
        when S2.status=5 then "Shipped"
        when S2.status=6 then "Received"
        when S2.status=7 then "Closed"
+       when S2.status=8 then "Rejected"
     end as status, 
     S2.username as auth from orders O 
     inner join (

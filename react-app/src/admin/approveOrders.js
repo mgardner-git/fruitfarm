@@ -40,6 +40,16 @@ const ApproveOrders = () => {
         loadOrders();
     });
   }
+
+  function rejectOrder(e, orderId) {
+    e.preventDefault();
+    console.log("rejecting " + orderId);
+    axios.put("/api/inventory/reject/" + orderId).then(function(response) {
+        loadOrders();
+    });
+  }
+
+
   return (
     <ProtectedRoute roles="inventoryManager">
         <h1>Approve Orders</h1>
@@ -65,7 +75,7 @@ const ApproveOrders = () => {
                     {order.fulfillable && 
                         <td>
                             <button onClick={(e) => approveOrder(e, order.id)}>Aprove Order</button>                            
-
+                            <button onClick={(e) => rejectOrder(e,order.id)}>Reject Order</button>
                         </td>
                     }
                   </tr>

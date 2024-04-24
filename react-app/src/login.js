@@ -39,7 +39,7 @@ export default function Login() {
                 if (response.data.role.includes("customer")) {
                     navigate("/purchase");
                 } else if (response.data.role.includes("inventoryManager")) {
-                    navigate("/manageOrders");
+                    navigate("/approveOrders");
                 }
                 
             } else {

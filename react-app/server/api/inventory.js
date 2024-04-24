@@ -20,6 +20,7 @@ router.get('/ordersToApprove/:locationId', async function(req, res) {
         
     
 });
+
 //find all orders awaiting fulfillment at a given location
 router.get('/ordersToFulfill/:locationId', async function(req, res)  {
     const locationId = req.params.locationId;
@@ -35,7 +36,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
     inner join inventory I on (I.id = L.inventoryId) 
     inner join produce P on (I.produceId = P.id)
     inner join (
-      select orderId, status, time from order_status O1 where time = (select MAX(time) from order_status where orderId = O1.id) 
+       select S1.orderId, S1.time, status from order_status s1 inner join (select orderId, max(time) as time from order_status group by orderId) S2 on s1.orderId = S2.orderId and S1.time=S2.time
     ) S on (S.orderId = O.id)
     where O.locationId=? and S.status=?
   `
@@ -85,15 +86,17 @@ router.put("/fulfill/:orderId", async function(req, res) {
     const orderId = req.params.orderId;
     const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format("YYYY-MM-DD HH:mm:ss");
-    let statusResult = await connection.promise().query(statusSql, [2, orderId, req.user, today]);
+    let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
     //update quantity available for each line item
+
 
     let fetchLineItemsSql = "select inventoryId, quantity from lineItem where orderId=?";
     let lineItems = await connection.promise().query(fetchLineItemsSql, [orderId]);
+    lineItems = lineItems[0];
     for (let index=0; index < lineItems.length; index++) {
         let lineItem = lineItems[index];
-        const reduceInvSql = "update inventory I set quantityAvailable = quantityAvailable - ?";
-        let reduceResult = await connection.promise().query(reduceInvSql, [lineItem.quantity]);
+        const reduceInvSql = "update inventory I set quantityAvailable = quantityAvailable - ? where id = ?";
+        let reduceResult = await connection.promise().query(reduceInvSql, [lineItem.quantity, lineItem.inventoryId]);
     }
     res.status(200);
     res.json({});

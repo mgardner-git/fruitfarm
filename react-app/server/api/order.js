@@ -124,7 +124,7 @@ async function createOrder(order) {
 
         //now create the status change object and tie it to the purchasing user
         const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
-        var today = moment.format("YYYY-MM-DD HH:mm:ss");
+        var today = moment().format("YYYY-MM-DD HH:mm:ss");
         let statusResult = await connection.promise().query(statusSql, [1, createdOrder.id, order.username, today]);
 
         //now delete all the cart items at that location

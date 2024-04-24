@@ -88,7 +88,7 @@ const Order = () => {
           <div id ="result">
               <h2>Orders</h2>
                 <ul class="order">            
-                    <li>Your order has been registerd with order# {order.id} </li>
+                    <li>Your order has been registered with order# {order.id} </li>
                     <li>You will receive an email when the order has been approved by inventory management.</li>
                 </ul>            
           </div>

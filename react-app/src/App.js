@@ -7,7 +7,8 @@ import Purchase from "./purchase";
 import MyOrders from "./myOrders";
 import Cart from "./cart";
 import Order from "./order";
-import ManageOrders from "./admin/manageOrders"
+import ApproveOrders from "./admin/approveOrders";
+import FulfillOrders from "./admin/fulfillOrders";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 
 function App() {
@@ -27,7 +28,9 @@ function App() {
               <Route path = "login" element = {<Login/>}></Route>
               <Route path = "register" element = {<Register/>}></Route>       
               <Route path = "order" element = {<Order/>}></Route>  
-              <Route path = "manageOrders" element = {<ManageOrders/>}></Route>     
+              <Route path = "approveOrders" element = {<ApproveOrders/>}></Route>     
+              <Route path = "fulfillOrders" element = {<FulfillOrders/>}></Route>
+
             </Routes>          
           </div>
         </BrowserRouter> 

@@ -12,9 +12,10 @@ const ApproveOrders = () => {
   const [locationId, setLocationId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null); 
   const [orders, setOrders] = useState([]);
+  const [order, setOrder] = useState({items:[]}); //selected order when you open the fulfill Dialog
   const [locations, setLocations] = useState([]);
+  const [fulfillItems, setFulfillItems] = useState([]); //the put body sent to fulfill 1 order
  
-    
   useEffect(() => {
     axios.get("/api/locations").then(function(response) {
         setLocations(response.data);
@@ -31,14 +32,50 @@ const ApproveOrders = () => {
   function loadOrders() {
     axios.get("/api/inventory/ordersToFulfill/" + locationId).then(function(response) {
         setOrders(response.data);
+        setOrder(null);
     });
   }
-  function fulfillOrder(e, orderId) {
+  function fulfillOrder(e, order) {
     e.preventDefault();
-    console.log("fulfilling " + orderId);
-    axios.put("/api/inventory/fulfill/" + orderId).then(function(response) {
+    console.log("fulfilling " + order.id);
+
+    axios.put("/api/inventory/fulfill/" + order.id, fulfillItems).then(function(response) {
         loadOrders();
     });
+  }
+
+  function updateCrate( crate, quantity) {
+    crate.quantity = quantity;
+  }
+  function openFulfillDialog(e, order) {
+    axios.get("/api/inventory/crates/" + order.id).then(function(response) {
+      let crates  = response.data;
+      let newFulfillItems = [];
+      for (let index=0; index < order.items.length; index++) {
+        let lineItem = order.items[index];
+        let crateSet = {
+          id: lineItem.inventoryId,
+          quantity: lineItem.quantity, 
+          crates: []
+
+        };
+        //find all crates that carry this item
+        for (let c = 0; c < crates.length; c++) {
+          const checkCrate = crates[c];
+          if (checkCrate.inventoryId == lineItem.inventoryId) {
+              crateSet.crates.push({
+                serialNumber: checkCrate.serialNumber, 
+                quantity: 0,
+                quantityAvailable: checkCrate.quantityAvailable
+              });
+          }
+        }
+        newFulfillItems.push(crateSet);
+      }
+      setFulfillItems(newFulfillItems);
+      setOrder(order);
+    });
+    
   }
   return (
     <ProtectedRoute roles="inventoryManager">
@@ -64,7 +101,7 @@ const ApproveOrders = () => {
                     <td>{order.fulfillable ? "yes":"no"}</td>
                     {order.fulfillable && 
                         <td>
-                            <button onClick={(e) => fulfillOrder(e, order.id)}>Fulfill Order</button>                            
+                            <button onClick={(e) => openFulfillDialog(e, order)}>Fulfill Order</button>                            
 
                         </td>
                     }
@@ -73,21 +110,6 @@ const ApproveOrders = () => {
                     <td></td>
                     <td>
 
-                        <table id = "lineItems">
-                            <thead>
-                                <tr><th>Name</th><th>Price</th><th>Quantity Ordered</th><th>Quantity Available</th></tr>
-                            </thead>
-                            <tbody>
-                            {order.items.map((item) => (
-                                <tr>
-                                    <td>{item.name}</td>
-                                    <td>{item.price}</td>
-                                    <td>{item.quantity}</td>
-                                    <td>{item.quantityAvailable}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
                     </td>
                   </tr>
                 </>
@@ -97,6 +119,47 @@ const ApproveOrders = () => {
           ): (
             <h3>There are no orders to fulfill</h3>
           )}
+
+          <div id = "fulfillDialog">
+            {order && 
+            <table id = "lineItems">
+              <thead>
+                  <tr><th>Name</th><th>Price</th><th>Quantity Ordered</th><th>Quantity Available</th></tr>
+              </thead>
+              <tbody>
+              {order.items.map((item,index) => (
+                <>
+                  <tr>
+                      <td>{item.name}</td>
+                      <td>{item.price}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.quantityAvailable}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="4">
+                    {fulfillItems.map((crateSet) => (
+                       <>
+                        {crateSet.crates.map((crate) => (
+                          <div>
+                            <label>Cart# {crate.serialNumber}</label>
+                            <label>Quantity Available:</label> {crate.quantityAvailable}<br/>
+                            <input type="number" onChange={(e) => updateCrate(crate, e.target.value)}/>
+                          </div>
+                          
+                        ))}                                             
+                       </>
+                    ))}
+                    </td>                    
+                  </tr>
+                </>
+              ))}
+              </tbody>
+            </table>
+            }
+            {order && 
+              <button onClick = {(e) => fulfillOrder(e, order)}>Fulfill</button>
+            }  
+          </div>
     </ProtectedRoute>
 )}
 export default ApproveOrders;

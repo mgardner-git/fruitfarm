@@ -12,7 +12,7 @@ const {verifyLoggedIn }= require('./verifyLoggedIn');
 router.use(verifyLoggedIn);
 
 router.get('/', (req, res) => {        
-    const sql = "select I.id, P.name, I.quantityAvailable, I.price from inventory I  inner join produce P  on I.produceId = P.id where I.locationId=?;";
+    const sql = "select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price from inventory I  inner join produce P  on I.produceId = P.id inner join crate C on (I.id=C.inventoryId) where I.locationId=? group by inventoryId;";
     const locationId = req.query.location;
     console.log(sql);
     connection.query(sql, [locationId], (err,result) => {

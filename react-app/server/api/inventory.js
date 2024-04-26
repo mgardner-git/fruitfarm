@@ -31,13 +31,16 @@ router.get('/ordersToFulfill/:locationId', async function(req, res)  {
 
 async function getOrdersAtLocationAndStatus(locationId, status) {
     const sql = `
-    select O.id as orderId, L.price, L.quantity, I.quantityAvailable, P.name, S.status from 
+    select O.id as orderId, L.price, L.quantity, I.id as inventoryId, C.quantityAvailable, P.name, S.status from 
     Orders O inner join LineItem L on (L.orderId = O.id)
     inner join inventory I on (I.id = L.inventoryId) 
     inner join produce P on (I.produceId = P.id)
     inner join (
        select S1.orderId, S1.time, status from order_status s1 inner join (select orderId, max(time) as time from order_status group by orderId) S2 on s1.orderId = S2.orderId and S1.time=S2.time
     ) S on (S.orderId = O.id)
+    inner join (
+        select inventoryId, SUM(quantityAvailable) as quantityAvailable from crate group by inventoryId
+    ) C on (C.inventoryId = I.id)
     where O.locationId=? and S.status=?
   `
   
@@ -82,22 +85,58 @@ router.put("/approve/:orderId", async function(req,res)  {
 
 });
 
+
 router.put("/fulfill/:orderId", async function(req, res) {
     const orderId = req.params.orderId;
     const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format(DATE_FORMAT);
     let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
-    //update quantity available for each line item
+    
+    /*
+        put body structure
+            [            
+                {
+                    id: 1, (inventoryId)
+                    quantity: 20
+                    crates: [
+                        {
+                            id: 'ab',
+                            quantity: 10
+                        }, 
+                        {
+                            id: 'b2',
+                            quantity: 10
+                        }
 
+                    ]
+                }
+            ]                
+    */
 
-    let fetchLineItemsSql = "select inventoryId, quantity from lineItem where orderId=?";
-    let lineItems = await connection.promise().query(fetchLineItemsSql, [orderId]);
-    lineItems = lineItems[0];
-    for (let index=0; index < lineItems.length; index++) {
-        let lineItem = lineItems[index];
-        const reduceInvSql = "update inventory I set quantityAvailable = quantityAvailable - ? where id = ?";
-        let reduceResult = await connection.promise().query(reduceInvSql, [lineItem.quantity, lineItem.inventoryId]);
+    const items = req.body;  //each is drawing some amount from some cart to fulfill the order
+    for (let index=0; index < items.length; index++) {
+        let item = items[index];
+        let totalQuantityReduced = 0; 
+        for (let c = 0; c < item.crates.length; c++) {
+            let crate = item.crates[c];
+            //verify sufficient quantity available
+            let checkSql = "select serialNumber, quantityAvailable from crate where serialNumber=?";
+            let checkResult = await connection.promise().query(checkSql,[crate.serialNumber]);
+            checkResult = checkResult[0];
+            if (checkResult.length == 1 && checkResult[0].quantityAvailable >= parseInt(crate.quantity)) {
+                let reduceSql = "update crate set quantityAvailable = quantityAvailable-? where serialNumber=? and inventoryId=?";
+                let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
+                totalQuantityReduced += parseInt(crate.quantity);
+            } else {
+                throw ("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);
+            }            
+        }
+        if (!totalQuantityReduced === item.quantity) {
+            throw ("The quantity of the lineItem doesn't match the sum of quantities in the crates");
+        }
     }
+
+    
     res.status(200);
     res.json({});
 });
@@ -111,4 +150,22 @@ router.put("/reject/:orderId", async function(req, res) {
     res.status(200);
     res.json({});
 });
+
+//get the crates that correspond to each line item in an order.
+//note that some lineItems could be fulfilled by multiple crates in some cases.
+router.get("/crates/:orderId", async function(req,res) {
+    const orderId = req.params.orderId;
+    const crateSql = 
+    ` select O.id, C.serialNumber, L.inventoryId, C.quantityAvailable from 
+        Orders O inner join lineItem L on (O.id = L.orderId)
+        inner join crate C on (C.inventoryId = L.inventoryId)
+        where O.id = ?
+    `
+    const crates = await connection.promise().query(crateSql, [orderId]);
+    let result = crates[0];
+    res.status(200);
+    res.json(result);    
+
+});
+
 module.exports = router;

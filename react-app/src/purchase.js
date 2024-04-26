@@ -88,7 +88,7 @@ const Purchase = () => {
       let checkCart = cart[index];
       let productIndex = findProduct(checkCart.inventoryId);
       let checkProduct = products[productIndex];
-      let isError = checkCart.quantity > checkProduct.quantityAvailable;
+      let isError = parseInt(checkCart.quantity) > parseInt(checkProduct.quantityAvailable);
       var newErrors = [];
       if (isError) {
         newErrors[productIndex] = "You can't buy more than " + checkProduct.quantityAvailable;

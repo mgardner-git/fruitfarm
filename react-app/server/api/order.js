@@ -53,7 +53,7 @@ router.get("/myOrders", async function(req, res, next) {
 });
 router.post('/:locationId', async function(req, res, next) {
     const locationId = req.params.locationId;
-    const sql = "select c.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where c.username=? and L.id=?";
+    const sql = "select C.id, quantity, inventoryId, price, p.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join location L on I.locationId = L.id where C.username=? and L.id=?";
     let cartResults = await connection.promise().query(sql, [req.user, locationId]);
     cartResults = cartResults[0];
     if (cartResults.length > 0){
@@ -98,7 +98,7 @@ router.post('/:locationId', async function(req, res, next) {
 //TODO: TRANSACTIONALITY
 async function createOrder(order) {
     
-    const sql = "INSERT INTO ORDERS (userId, locationId, destination_address) values (?,?,?)";
+    const sql = "insert into orders (userId, locationId, destination_address) values (?,?,?)";
     console.log("Creating order: ");
     console.log(order);
     let createdOrder = {
@@ -112,7 +112,7 @@ async function createOrder(order) {
         
     for (var index=0; index < order.items.length; index++) {
         var lineItem = order.items[index];
-        const lineItemSQL = "INSERT INTO LINEITEM (orderId, inventoryId, price, quantity) values (?,?,?,?)";
+        const lineItemSQL = "insert into lineItem(orderId, inventoryId, price, quantity) values (?,?,?,?)";
         let lineItemResult = await connection.promise().query(lineItemSQL, [createdOrder.id, lineItem.inventoryId, lineItem.price, lineItem.quantity]);
 
         let createdLineItem = {
@@ -124,12 +124,12 @@ async function createOrder(order) {
         createdOrder.items.push(createdLineItem);
 
         //now create the status change object and tie it to the purchasing user
-        const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
+        const statusSql = "INSERT INTO order_status (status, orderId, username, time) values (?,?,?,?)";
         var today = moment().format("YYYY-MM-DD HH:mm:ss");
         let statusResult = await connection.promise().query(statusSql, [1, createdOrder.id, order.username, today]);
 
         //now delete all the cart items at that location
-        const deleteSql = "delete from cart where id in ( select id from (select c.id from cart c inner join inventory i on (c.inventoryId = i.id) where c.username=? and i.locationId=?) as c1)";
+        const deleteSql = "delete from cart where id in ( select id from (select C.id from cart C inner join inventory I on (C.inventoryId = I.id) where C.username=? and I.locationId=?) as C1)";
         let deleteCartResult = await connection.promise().query(deleteSql, [order.username, order.locationId]);
 
         createdOrder.status = 1; 

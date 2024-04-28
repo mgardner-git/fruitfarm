@@ -20,7 +20,7 @@ const {verifyLoggedIn} = require('./verifyLoggedIn');
 
 router.use(verifyLoggedIn);
 router.get("/byLocation/:locationId", async function(req, res) {
-  const sql = "select C.id, quantity, inventoryId, price, P.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join location L on I.locationId = L.id where c.username=? and L.id=?";    
+  const sql = "select C.id, quantity, inventoryId, price, P.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join location L on I.locationId = L.id where C.username=? and L.id=?";    
   const locationId = req.params.locationId;
   let results = await connection.promise().query(sql, [req.user, locationId]);
   results = results[0];
@@ -50,7 +50,7 @@ router.get('/allLocations', (req, res) => {
 
 
 
-    const sql = "select C.id, quantity, inventoryId, price, P.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join Location L on I.locationId = L.id where C.username=?";
+    const sql = "select C.id, quantity, inventoryId, price, P.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join location L on I.locationId = L.id where C.username=?";
     console.log(sql);
     console.log(req.user);
     connection.query(sql, [req.user], (err,result) => {
@@ -135,7 +135,7 @@ router.get('/allLocations', (req, res) => {
 });
 
 router.get("/", (req, res) => {
-  const sql = "select c.id, quantity, inventoryId, P.name, I.locationId from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) where C.username=?";
+  const sql = "select C.id, quantity, inventoryId, P.name, I.locationId from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) where C.username=?";
   console.log(sql);
   console.log(req.user);
   connection.query(sql, [req.user], (err,result) => {
@@ -172,7 +172,7 @@ router.put("/", (req,res) => {
     var update = updateCart[index];
     
     //update
-    const sql = "REPLACE INTO CART(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
+    const sql = "replace into cart(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
     console.log(sql);
     console.log(update);
     console.log(req.user);

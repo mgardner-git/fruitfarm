@@ -32,11 +32,11 @@ router.get('/ordersToFulfill/:locationId', async function(req, res)  {
 async function getOrdersAtLocationAndStatus(locationId, status) {
     const sql = `
     select O.id as orderId, L.price, L.quantity, I.id as inventoryId, C.quantityAvailable, P.name, S.status from 
-    Orders O inner join LineItem L on (L.orderId = O.id)
+    orders O inner join lineItem L on (L.orderId = O.id)
     inner join inventory I on (I.id = L.inventoryId) 
     inner join produce P on (I.produceId = P.id)
     inner join (
-       select S1.orderId, S1.time, status from order_status s1 inner join (select orderId, max(time) as time from order_status group by orderId) S2 on s1.orderId = S2.orderId and S1.time=S2.time
+       select S1.orderId, S1.time, status from order_status S1 inner join (select orderId, max(time) as time from order_status group by orderId) S2 on S1.orderId = S2.orderId and S1.time=S2.time
     ) S on (S.orderId = O.id)
     inner join (
         select inventoryId, SUM(quantityAvailable) as quantityAvailable from crate group by inventoryId
@@ -77,7 +77,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
 
 router.put("/approve/:orderId", async function(req,res)  {
         const orderId = req.params.orderId;
-        const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
+        const statusSql = "insert into order_status (status, orderId, username, time) values (?,?,?,?)";
         var today = moment().format(DATE_FORMAT);
         let statusResult = await connection.promise().query(statusSql, [2, orderId, req.user, today]);
         res.status(200);
@@ -88,7 +88,7 @@ router.put("/approve/:orderId", async function(req,res)  {
 
 router.put("/fulfill/:orderId", async function(req, res) {
     const orderId = req.params.orderId;
-    const statusSql = "INSERT INTO ORDER_STATUS (status, orderId, username, time) values (?,?,?,?)";
+    const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format(DATE_FORMAT);
     let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
     
@@ -144,7 +144,7 @@ router.put("/fulfill/:orderId", async function(req, res) {
 router.put("/reject/:orderId", async function(req, res) {
 
     const orderId = req.params.orderId;
-    const statusSql = "INSERT INTO ORDER_STATUS(status, orderId, username, time) values (?,?,?,?)";
+    const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format(DATE_FORMAT);
     let statusResult = await connection.promise().query(statusSql, [8,orderId, req.user, today]);
     res.status(200);
@@ -157,7 +157,7 @@ router.get("/crates/:orderId", async function(req,res) {
     const orderId = req.params.orderId;
     const crateSql = 
     ` select O.id, C.serialNumber, L.inventoryId, C.quantityAvailable from 
-        Orders O inner join lineItem L on (O.id = L.orderId)
+        orders O inner join lineItem L on (O.id = L.orderId)
         inner join crate C on (C.inventoryId = L.inventoryId)
         where O.id = ?
     `
@@ -165,7 +165,6 @@ router.get("/crates/:orderId", async function(req,res) {
     let result = crates[0];
     res.status(200);
     res.json(result);    
-
 });
 
 module.exports = router;

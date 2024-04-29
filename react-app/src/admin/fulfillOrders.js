@@ -39,9 +39,13 @@ const ApproveOrders = () => {
     e.preventDefault();
     console.log("fulfilling " + order.id);
 
-    axios.put("/api/inventory/fulfill/" + order.id, fulfillItems).then(function(response) {
+    axios.put("/api/inventory/fulfill/" + order.id, fulfillItems).then(
+      function(response) {
         loadOrders();
-    });
+      })
+      .catch(function(error) {
+        alert ("The order was not fulfilled-probably because you didn't enter sufficient quantity to fulfill the order");
+      });
   }
 
   function updateCrate( crate, quantity) {

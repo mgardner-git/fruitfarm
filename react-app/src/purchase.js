@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
 import { Navigate} from 'react-router-dom';
 import {Link} from 'react-router-dom';
+import Button from '@mui/material/Button';
 
 
 const Purchase = () => {
@@ -193,7 +194,7 @@ const Purchase = () => {
                 </tfoot>
             </table>
            }
-           <Link to="/cart">Go To Cart</Link>
+           <Button variant = "contained"><Link to="/cart">Go To Cart</Link></Button>
         </div>
       </ProtectedRoute>
 )}

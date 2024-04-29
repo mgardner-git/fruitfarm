@@ -1,6 +1,7 @@
 import {useRef, useState, useEffect} from 'react';
 import Axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import Button from '@mui/material/Button';
 
 Axios.defaults.withCredentials=true;
 
@@ -63,7 +64,7 @@ export default function Login() {
                         {errorMessage}
                     </p>
                     <h1>Sign In</h1>
-                    <form onSubmit={handleSubmit}>
+                    <form >
                         <section>
                         <label htmlFor = "username">Username:</label>
                         <input type="text" id="username" ref={userInputRef} onChange = {(e) => setUser(e.target.value)}
@@ -74,9 +75,7 @@ export default function Login() {
                         <input type="password" id="password" onChange = {(e) => setPassword(e.target.value)}
                         value = {password} required/>
                         </section>
-                        <button>Sign In</button>
-
-
+                        <Button variant = "contained" onClick={handleSubmit}>Sign In</Button>
                     </form>
                     <p>
                         New Customer?<br/>

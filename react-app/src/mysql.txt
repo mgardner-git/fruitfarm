@@ -99,8 +99,7 @@ create table cart (
 );
 
 insert into cart(quantity, inventoryId, username) values (2, 1, 'jill');
-insert into cart(quantity, insele
-ventoryId, username) values (2,2, 'jill');
+insert into cart(quantity, inventoryId, username) values (2,2, 'jill');
 
 create table phonenumber (
     id int not null primary key auto_increment,

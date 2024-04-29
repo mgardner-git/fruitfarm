@@ -131,8 +131,10 @@ router.put("/fulfill/:orderId", async function(req, res) {
                 throw ("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);
             }            
         }
-        if (!totalQuantityReduced === item.quantity) {
-            throw ("The quantity of the lineItem doesn't match the sum of quantities in the crates");
+        if (totalQuantityReduced != parseInt(item.quantity)) {
+            res.status (400);
+            res.json("The quantity of lineItem # " + item.id + " doesn't match the sum of quantities in the crates");
+            return;
         }
     }
 

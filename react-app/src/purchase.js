@@ -128,11 +128,9 @@ const Purchase = () => {
     let isClean = enforceMaxQuantity();
     if (isClean) {
       axios.put("/api/cart/", cart).then(function(response) {
-        if (response.status == 200){
           alert("Cart Updated");  //TODO: Toast Library
-        } else {
-          setErrorMessage(JSON.stringify(response));        
-        }      
+      }).catch(function(err) {
+        alert(err.response.data);
       });
     } else {
       alert("You have cart errors.")
@@ -170,7 +168,7 @@ const Purchase = () => {
                       <td>{product.quantityAvailable}</td>
                       <td>{product.price}</td>
                       <td>
-                        <input type="number" id = {product.id}
+                        <input type="number" id = {product.id} min="0"
                           onChange= {(e) => updateQuantity(product.id, e.target.value)}
                           >
                         </input>

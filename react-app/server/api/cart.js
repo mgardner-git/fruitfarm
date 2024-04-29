@@ -48,8 +48,6 @@ router.get("/byLocation/:locationId", async function(req, res) {
 
 router.get('/allLocations', (req, res) => {
 
-
-
     const sql = "select C.id, quantity, inventoryId, price, P.name, I.locationId, L.name as locationName from cart C inner join inventory I on (C.inventoryId = I.id) inner join produce P on (I.produceId = P.id) inner join location L on I.locationId = L.id where C.username=?";
     console.log(sql);
     console.log(req.user);
@@ -167,25 +165,43 @@ router.put("/", (req,res) => {
   ]
   */
   const updateCart = req.body;
-  //TODO: This is not transactional
-  for (let index=0; index < updateCart.length; index++) {
-    var update = updateCart[index];
-    
-    //update
-    const sql = "replace into cart(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
-    console.log(sql);
-    console.log(update);
-    console.log(req.user);
-    connection.query(sql, [update.id, update.inventoryId, update.quantity,req.user], (err,result) => {
+  connection.beginTransaction(function(err) {
+    for (let index=0; index < updateCart.length; index++) {
+      var update = updateCart[index];
+      
+      //update
+      const sql = "replace into cart(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
+      console.log(sql);
+      console.log(update);
+      console.log(req.user);
+      if (update.quantity < 0) {
+        res.status(500);
+        res.json("Can't update cart quantity to negative numbers");
+        connection.rollback(function() {
+          //connection.release(); //failure
+        });
+        return;
+      }
+      connection.query(sql, [update.id, update.inventoryId, update.quantity,req.user], (err,result) => {
+        if (err) {
+            console.log(err);
+            res.status(500);
+            return res.json(null);
+        }
+      });
+    }//end for
+    connection.commit(function(err) {
       if (err) {
-          console.log(err);
-          res.status(500);
-          return res.json(null);
+        res.status(500);
+        return res.json(err);
+      } else {
+        res.status(200);
+        res.json(true);
       }
     });
-  }//end for
-  res.status(200);
-  res.json(true);
+  });
+  
+  
 });
 
 module.exports = router;

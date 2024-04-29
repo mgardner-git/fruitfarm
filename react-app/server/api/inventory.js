@@ -128,7 +128,9 @@ router.put("/fulfill/:orderId", async function(req, res) {
                 let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
                 totalQuantityReduced += parseInt(crate.quantity);
             } else {
-                throw ("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);
+                res.status(400);
+                res.json("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);
+                return; //TODO: rollback transaction
             }            
         }
         if (totalQuantityReduced != parseInt(item.quantity)) {

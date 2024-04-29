@@ -4,15 +4,21 @@ import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../protectedRoute';
 import {Link} from 'react-router-dom';
 import {useNavigate, useSearchParams} from 'react-router-dom';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+
 import App from '../App';
 
-const ApproveOrders = () => {
+const FulfillOrders = () => {
   const navigate = useNavigate();
   
   const [locationId, setLocationId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null); 
   const [orders, setOrders] = useState([]);
-  const [order, setOrder] = useState({items:[]}); //selected order when you open the fulfill Dialog
+  const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
   const [locations, setLocations] = useState([]);
   const [fulfillItems, setFulfillItems] = useState([]); //the put body sent to fulfill 1 order
  
@@ -42,9 +48,10 @@ const ApproveOrders = () => {
     axios.put("/api/inventory/fulfill/" + order.id, fulfillItems).then(
       function(response) {
         loadOrders();
+        setOrder(null);
       })
       .catch(function(error) {
-        alert ("The order was not fulfilled-probably because you didn't enter sufficient quantity to fulfill the order");
+        alert (error);
       });
   }
 
@@ -76,11 +83,18 @@ const ApproveOrders = () => {
         }
         newFulfillItems.push(crateSet);
       }
+
       setFulfillItems(newFulfillItems);
       setOrder(order);
     });
     
   }
+
+  function closeDialog(e) {
+    e.preventDefault();
+    setOrder(null);
+  }
+
   return (
     <ProtectedRoute roles="inventoryManager">
         <h1>Fulfill Orders</h1>
@@ -105,8 +119,7 @@ const ApproveOrders = () => {
                     <td>{order.fulfillable ? "yes":"no"}</td>
                     {order.fulfillable && 
                         <td>
-                            <button onClick={(e) => openFulfillDialog(e, order)}>Fulfill Order</button>                            
-
+                            <button onClick={(e) => openFulfillDialog(e, order)}>View Order</button>
                         </td>
                     }
                   </tr>
@@ -124,7 +137,9 @@ const ApproveOrders = () => {
             <h3>There are no orders to fulfill</h3>
           )}
 
-          <div id = "fulfillDialog">
+        <Dialog open={order != null} id = "approveDialog" onClose={closeDialog}>
+          <DialogTitle>Fulfill Order</DialogTitle>
+          <DialogContent>
             {order && 
             <table id = "lineItems">
               <thead>
@@ -143,10 +158,11 @@ const ApproveOrders = () => {
                     <td colspan="4">
                     {fulfillItems.map((crateSet) => (
                        <>
+                        <h3>Carts</h3>
                         {crateSet.crates.map((crate) => (
                           <div>
-                            <label>Cart# {crate.serialNumber}</label>
-                            <label>Quantity Available:</label> {crate.quantityAvailable}<br/>
+                            <label>#{crate.serialNumber}</label>&nbsp;
+                            <label>Available:</label> {crate.quantityAvailable}<br/>
                             <input type="number" onChange={(e) => updateCrate(crate, e.target.value)}/>
                           </div>
                           
@@ -160,11 +176,13 @@ const ApproveOrders = () => {
               </tbody>
             </table>
             }
-            {order && 
-              <button onClick = {(e) => fulfillOrder(e, order)}>Fulfill</button>
-            }  
-          </div>
+            </DialogContent>
+            <DialogActions>              
+                <button onClick = {(e) => fulfillOrder(e, order)}>Fulfill</button>
+                <button onClick = {closeDialog}>Close</button>
+            </DialogActions>
+          </Dialog>
     </ProtectedRoute>
 )}
-export default ApproveOrders;
+export default FulfillOrders;
   

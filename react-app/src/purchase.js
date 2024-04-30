@@ -2,10 +2,13 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
-import { Navigate} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import Button from '@mui/material/Button';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 
 const Purchase = () => {
 
@@ -13,14 +16,15 @@ const Purchase = () => {
   //TODO: Store users favorite loc perm
   const [locations, setLocations] = useState([]);
   const [products, setProducts] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [errors, setErrors] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [errors, setErrors] = useState([]);  //error per product, for odering more then available
+  
   
   useEffect(() => {
     axios.get("/api/locations/").then(function(response) {
       
       console.log(response.data);
-      if (response.status == 200){
+      if (response.status === 200){
         setLocations(response.data);
       } else {
         setErrorMessage(JSON.stringify(response));        
@@ -32,11 +36,13 @@ const Purchase = () => {
     if (myLocation) {
       
       axios.get("/api/produce/produceAndCart/" + myLocation).then(function(response) {
-          if (response.status == 200) {
+          if (response.status === 200) {
             setProducts(response.data);
           } else {
             setErrorMessage(JSON.stringify(response));
           }
+      }).catch(function(err) {
+        setErrorMessage(err.response.data);
       });
     }
 
@@ -44,15 +50,6 @@ const Purchase = () => {
 
 
 
-  function findProduct(inventoryId) {
-    for (let index=0; index < products.length; index++) {
-      let checkProduct = products[index];
-      if (checkProduct.id === inventoryId) {
-        return index;
-      }
-    }
-    return null;
-  }
   function enforceMaxQuantity() {
 
     var isClean = true;
@@ -78,13 +75,18 @@ const Purchase = () => {
   function updateQuantity(inventoryId, quantity) {
     console.log("Update " + inventoryId + "," + quantity);
     for (let index=0; index < products.length; index++) {
-      if (products[index].id == inventoryId) {
+      if (products[index].id === parseInt(inventoryId)) {
         products[index].quantity = quantity;
 
       }
     }
     enforceMaxQuantity();    
   }  
+
+  function closeErrorDialog(e) {
+    e.preventDefault();
+    setErrorMessage(null);
+  }
 
   //occurs only when they click update cart
   function updateCart(e) {    
@@ -108,12 +110,11 @@ const Purchase = () => {
       axios.put("/api/cart/", cart).then(function(response) {
           alert("Cart Updated");  //TODO: Toast Library
       }).catch(function(err) {
-        alert(err.response.data);
-        //loadCart();
+        setErrorMessage(err.response.data);        
         setMyLocation(myLocation);
       });
     } else {
-      alert("You have cart errors.")      
+      setErrorMessage("You have cart errors.");
     }
     return true;
   }
@@ -130,10 +131,6 @@ const Purchase = () => {
                     <option value = {loc.id}> {loc.name}</option>
                 ))}
               </select>
-              
-              <p className = {errorMessage ? "error":"ofscreen"} aria-live="assertive">
-                {errorMessage}
-              </p>
            </div>      
            {myLocation &&     
             <table id = "fruit"  border='1'>
@@ -172,6 +169,13 @@ const Purchase = () => {
            }
            <Button variant = "contained"><Link to="/cart">Go To Cart</Link></Button>
         </div>
+        <Dialog open={errorMessage != null} id = "errorDialog">
+          <DialogTitle>Error</DialogTitle>
+          <DialogContent>{errorMessage}</DialogContent>
+          <DialogActions>                              
+                <button onClick = {closeErrorDialog}>Close</button>
+            </DialogActions>
+        </Dialog>
       </ProtectedRoute>
 )}
 export default Purchase;

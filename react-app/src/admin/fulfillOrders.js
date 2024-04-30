@@ -2,18 +2,14 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../protectedRoute';
-import {Link} from 'react-router-dom';
-import {useNavigate, useSearchParams} from 'react-router-dom';
-import Button from '@mui/material/Button';
+
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import App from '../App';
 
 const FulfillOrders = () => {
-  const navigate = useNavigate();
   
   const [locationId, setLocationId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null); 
@@ -33,7 +29,7 @@ const FulfillOrders = () => {
     if (locationId) {
         loadOrders();
     }
-  }, locationId);
+  }, [locationId]);
 
   function loadOrders() {
     axios.get("/api/inventory/ordersToFulfill/" + locationId).then(function(response) {

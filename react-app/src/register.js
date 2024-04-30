@@ -64,7 +64,7 @@ const Register = () => {
       Axios.post("/api/users/register",  postBody).then(function(response) {
         console.log(response);
         console.log(response.status);
-        if (response.status != 500){
+        if (response.status !== "500"){
           setSuccess(true);
         } else {
           setErrorMessage(JSON.stringify(response));

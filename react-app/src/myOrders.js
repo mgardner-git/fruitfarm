@@ -10,7 +10,7 @@ const MyOrders = () => {
   useEffect(() => {
     axios.get("/api/order/myOrders").then(function(response) {
       
-      if (response.status == 200){
+      if (response.status === 200){
         for (let index=0; index < response.data.length; index++) {
           response.data[index].time = new Date(response.data[index].time).toDateString();
         }

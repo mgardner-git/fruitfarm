@@ -3,11 +3,15 @@ import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
 import {useNavigate} from 'react-router-dom';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+
+
 
 
 const Cart = () => {
   let navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState(null); 
   const [cart, setCart] = useState({
     locations: []
   }); 
@@ -16,10 +20,10 @@ const Cart = () => {
     axios.get("/api/cart/allLocations").then(function(response) {
       
       console.log(response.data);
-      if (response.status == 200){
+      if (response.status === 200){
         setCart(response.data);
       } else {
-        setErrorMessage(JSON.stringify(response));        
+
       }
     });
   }, []);
@@ -31,46 +35,39 @@ const Cart = () => {
   return (
     <ProtectedRoute roles="customer manager">
           <h1>Cart</h1>
-          <table id = "cart">
-            
-              
-            
-            <tbody>
-              {cart.locations? cart.locations.map((location) => (
-                <>
-                  <tr>
-                    <td colspan = "4" align="left"><h3>{location.name}</h3></td>
-                  </tr>
-                  <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th>
-                    <th>
-                      {location.locationId}
-                      <button onClick={(e) => goOrder(location.locationId,e)}>Order</button>
-                    </th>
-                  </tr>
-                  {location.items.map((item) => (
-
+          <div id = "cart">
+          {cart.locations? cart.locations.map((location) => (
+            <Accordion>
+                  <AccordionSummary   expandIcon = {<span>+</span>} aria-controls="panel1-content" >{location.name}</AccordionSummary>
+                  <AccordionDetails>
+                    <table class = "items">
+                    <tr><th>Product</th><th>price</th><th>Quantity</th><th>total</th>
+                      <th>
+                        {location.locationId}
+                        <button onClick={(e) => goOrder(location.locationId,e)}>Order</button>
+                      </th>
+                    </tr>
+                    {location.items.map((item) => (
                       <tr>
                         <td>{item.name}</td>
                         <td>{item.price}</td>
                         <td>{item.quantity}</td>
                         <td>{item.total}</td>
                       </tr>
-                  ))}
-                  <tr>
-                    <td colspan="3" align="right">
-                      <h3>Location Total:</h3>
-                    </td>
-                    <td> {location.total}</td>
-                  </tr>
-                </>
+                    ))}
+                      <tr>
+                        <td colspan="3" align="right">
+                          <h3>Location Total:</h3>
+                        </td>
+                        <td> {location.total}</td>
+                      </tr>
+                    </table>
+                  </AccordionDetails>
+                  
+              </Accordion>
               )): ""}
-              <tr>
-                <td colspan="3" align = "right"><h3>Order Total:</h3></td>
-                <td>{cart.total}</td>
-              </tr>
-            </tbody>
-          </table>
-          
+              <h3>Grand Total:{cart.total}</h3>
+          </div>
     </ProtectedRoute>
   )
 }

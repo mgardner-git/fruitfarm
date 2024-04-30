@@ -2,14 +2,11 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
-import {Link} from 'react-router-dom';
-import {useNavigate, useSearchParams} from 'react-router-dom';
+import {useSearchParams} from 'react-router-dom';
 
 const Order = () => {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const locationId = searchParams.get("locationId");
-  const [errorMessage, setErrorMessage] = useState(null); 
   const [cart, setCart] = useState({
     items: []
   });
@@ -23,10 +20,10 @@ const Order = () => {
     axios.get("/api/cart/byLocation/" + locationId).then(function(response) {
       
       console.log(response.data);
-      if (response.status == 200){
+      if (response.status === 200){
         setCart(response.data);
       } else {
-        setErrorMessage(JSON.stringify(response));        
+        alert(JSON.stringify(response));
       }
     });
     axios.get("/api/address/byUser").then(function(response) {
@@ -36,22 +33,24 @@ const Order = () => {
       console.log(address);
     });
 
-  }, []);
+  });
 
   function sendOrder(event){
     event.preventDefault();
     axios.post("/api/order/" + locationId,{address: address.id}).then(function(response) {
       
       console.log(response.data);
-      if (response.status == 200){
+      if (response.status === "200"){
         setOrder(response.data);
       } else {
-        setErrorMessage(JSON.stringify(response));        
+        alert(JSON.stringify(response));        
       }
     });
   }
   return (
     <ProtectedRoute roles="customer manager">
+      {order == null && 
+      <>
           <h1>Order</h1>
           <h2>{cart.name}</h2>
           <table id = "cart">
@@ -84,11 +83,13 @@ const Order = () => {
           </select>
        
          <button onClick={sendOrder}>Finalize Order</button>
+        </>
+        }
          {order &&
           <div id ="result">
               <h2>Orders</h2>
                 <ul class="order">            
-                    <li>Your order has been registered with order# {order.id} </li>
+                    <li>Your order has been registered. Your order number is {order.id} </li>
                     <li>You will receive an email when the order has been approved by inventory management.</li>
                 </ul>            
           </div>

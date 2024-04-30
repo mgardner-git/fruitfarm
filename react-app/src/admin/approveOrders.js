@@ -2,19 +2,16 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../protectedRoute';
-import {Link} from 'react-router-dom';
 import {useNavigate, useSearchParams} from 'react-router-dom';
-import App from '../App';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+
 const ApproveOrders = () => {
-  const navigate = useNavigate();
-  
-  const [locationId, setLocationId] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null); 
+  const navigate = useNavigate();  
+  const [locationId, setLocationId] = useState(null);  
   const [orders, setOrders] = useState([]);
   const [locations, setLocations] = useState([]);
   const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
@@ -31,7 +28,7 @@ const ApproveOrders = () => {
     if (locationId) {
         loadOrders();
     }
-  }, locationId);
+  }, [locationId]);
 
   function loadOrders() {
     axios.get("/api/inventory/ordersToApprove/" + locationId).then(function(response) {

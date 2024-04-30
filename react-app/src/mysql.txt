@@ -52,6 +52,7 @@ create table produce (
     
 );
 insert into produce (name, description) values ("fuji apples", "yummy crisp fuji apples");
+insert into produce (name, description) values ("yellow onion", "small yellow onions");
 insert into produce (name, description) values ("bananas", "yellow bananas");
 
 
@@ -81,11 +82,14 @@ create table crate (
 
 #fuji apples are on sale for $1 at las vegas
 insert into inventory (price, locationId, produceId) values (1, 1, 1); 
-insert into inventory (price, locationId, produceId) values (.89, 2, 2);
+insert into inventory (price,locationId, produceId) values(1.5, 1, 2);
+insert into inventory (price, locationId, produceId) values (.89, 2, 3);
+
 #1 crate at each location
 insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("A1", 1, 1, 4);
 insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("A2", 1, 1, 6);
-insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("B2", 2, 2, 10);
+insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("A3", 1, 2, 10);
+insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("B2", 2, 3, 10);
 
 
 #each row documents how much of what a user has loaded to cart

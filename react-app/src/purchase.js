@@ -4,11 +4,7 @@ import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
 import {Link} from 'react-router-dom';
 import Button from '@mui/material/Button';
-
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
+import ErrorDialog  from './errorDialog';
 
 const Purchase = () => {
 
@@ -169,13 +165,7 @@ const Purchase = () => {
            }
            <Button variant = "contained"><Link to="/cart">Go To Cart</Link></Button>
         </div>
-        <Dialog open={errorMessage != null} id = "errorDialog">
-          <DialogTitle>Error</DialogTitle>
-          <DialogContent>{errorMessage}</DialogContent>
-          <DialogActions>                              
-                <button onClick = {closeErrorDialog}>Close</button>
-            </DialogActions>
-        </Dialog>
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
       </ProtectedRoute>
 )}
 export default Purchase;

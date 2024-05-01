@@ -5,7 +5,7 @@ import { ProtectedRoute  } from './protectedRoute';
 import {useSearchParams} from 'react-router-dom';
 
 const Order = () => {
-  const searchParams = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const locationId = searchParams.get("locationId");
   const [cart, setCart] = useState({
     items: []
@@ -13,18 +13,16 @@ const Order = () => {
   const [address, setAddress] = useState(null);
   const [addresses, setAddresses] = useState([]); 
   const [order, setOrder] = useState(null);
-  
+  const [errorMessage, setErrorMessage] = useState(null);
   
   useEffect(() => {
     
     axios.get("/api/cart/byLocation/" + locationId).then(function(response) {
-      
       console.log(response.data);
-      if (response.status === 200){
         setCart(response.data);
-      } else {
-        alert(JSON.stringify(response));
-      }
+    })
+    .catch(function(err) {
+      setErrorMessage(err.response.data);
     });
     axios.get("/api/address/byUser").then(function(response) {
       setAddresses(response.data);
@@ -33,18 +31,16 @@ const Order = () => {
       console.log(address);
     });
 
-  });
+  },[]);
 
   function sendOrder(event){
     event.preventDefault();
     axios.post("/api/order/" + locationId,{address: address.id}).then(function(response) {
-      
       console.log(response.data);
-      if (response.status === "200"){
-        setOrder(response.data);
-      } else {
-        alert(JSON.stringify(response));        
-      }
+      setOrder(response.data);
+    })
+    .catch(function(err) {
+      setErrorMessage(err.response.data);
     });
   }
   return (

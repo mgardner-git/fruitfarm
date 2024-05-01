@@ -2,6 +2,7 @@ import {useRef, useState, useEffect} from 'react';
 import Axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Button from '@mui/material/Button';
+import ErrorDialog  from './errorDialog';
 
 Axios.defaults.withCredentials=true;
 
@@ -13,7 +14,7 @@ export default function Login() {
 
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
     
@@ -21,9 +22,6 @@ export default function Login() {
         userInputRef.current.focus();
     }, []);
 
-    useEffect(() => {
-        setErrorMessage('');
-    }, [user, password]);
 
     const handleSubmit = async (e) => {
         
@@ -42,6 +40,7 @@ export default function Login() {
                 } else if (response.data.role.includes("inventoryManager")) {
                     navigate("/approveOrders");
                 }
+                setErrorMessage(null);
                 
             } else {
                 setSuccess(false);
@@ -49,7 +48,11 @@ export default function Login() {
             }
         });        
     };
-
+    function closeErrorDialog(e) {
+       e.preventDefault();
+       setErrorMessage(null);
+    }
+    
     return (
         <>
             {success ? (
@@ -86,6 +89,8 @@ export default function Login() {
                    </p>
                 </section>
             )}
+            {errorMessage}
+            <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
         </>
     );
 }

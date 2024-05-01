@@ -32,7 +32,12 @@ router.get('/', async function(req, res) {
 router.get("/produceAndCart/:location", async function(req,res) {
     var locationId = req.params.location;
 
-    const sql = "select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price from inventory I  inner join produce P  on I.produceId = P.id inner join crate C on (I.id=C.inventoryId) where I.locationId=? group by inventoryId";
+    const sql = `select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price 
+        from inventory I  inner join produce P  on I.produceId = P.id 
+        inner join crate C on (I.id=C.inventoryId) 
+        where I.locationId=? 
+        group by inventoryId 
+        having quantityAvailable>0`;
     console.log(sql);
     let produceResult = await connection.promise().query(sql, [locationId]);
     produceResult = produceResult[0];

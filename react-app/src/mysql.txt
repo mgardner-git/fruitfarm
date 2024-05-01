@@ -71,10 +71,10 @@ create table inventory (
 create table crate (
     serialNumber varchar(20) not null primary key,
     locationId int not null, 
-    inventoryId int not null,
+    inventoryId int,
     quantityAvailable int,
-    foreign key(locationId) references location(id),
-    foreign key(inventoryId) references inventory(id)
+    foreign key(locationId) references location(id) on delete cascade,
+    foreign key(inventoryId) references inventory(id) on delete cascade
 );
 
 
@@ -90,7 +90,8 @@ insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) valu
 insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("A2", 1, 1, 6);
 insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("A3", 1, 2, 10);
 insert into crate(serialNumber, locationId, inventoryId, quantityAvailable) values ("B2", 2, 3, 10);
-
+#empty crate
+insert into crate(serialNumber, locationId) values ("C1", 2);
 
 #each row documents how much of what a user has loaded to cart
 create table cart (
@@ -98,7 +99,7 @@ create table cart (
     quantity int not null,
     inventoryId int not null,
     username varchar(20),
-    foreign key (inventoryid) references inventory(id),
+    foreign key (inventoryid) references inventory(id) on delete cascade,
     foreign key (username) references user(username)
 );
 

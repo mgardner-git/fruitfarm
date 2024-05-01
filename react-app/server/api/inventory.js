@@ -87,86 +87,65 @@ router.put("/approve/:orderId", async function(req,res)  {
 
 
 router.put("/fulfill/:orderId", async function(req, res) {
-    connection.beginTransaction( async function(err) {
-        if (err) {                  //Transaction Error (Rollback and release connection)
-            connection.rollback(function() {
-                connection.release();
-                //Failure
-            });
-        } else {     
-            const orderId = req.params.orderId;
-            const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
-            var today = moment().format(DATE_FORMAT);
-            let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
+    await connection.promise().beginTransaction();
+    const orderId = req.params.orderId;
+    const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
+    var today = moment().format(DATE_FORMAT);
+    let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
             
-            /*
-                put body structure
-                    [            
+    /*
+        put body structure
+            [            
+                {
+                    id: 1, (inventoryId)
+                    quantity: 20
+                    crates: [
                         {
-                            id: 1, (inventoryId)
-                            quantity: 20
-                            crates: [
-                                {
-                                    id: 'ab',
-                                    quantity: 10
-                                }, 
-                                {
-                                    id: 'b2',
-                                    quantity: 10
-                                }
-
-                            ]
+                            id: 'ab',
+                            quantity: 10
+                        }, 
+                        {
+                            id: 'b2',
+                            quantity: 10
                         }
-                    ]                
-            */
 
-            const items = req.body;  //each is drawing some amount from some cart to fulfill the order
-            for (let index=0; index < items.length; index++) {
-                let item = items[index];
-                let totalQuantityReduced = 0; 
-                for (let c = 0; c < item.crates.length; c++) {
-                    let crate = item.crates[c];
-                    //verify sufficient quantity available
-                    let checkSql = "select serialNumber, quantityAvailable from crate where serialNumber=?";
-                    let checkResult = await connection.promise().query(checkSql,[crate.serialNumber]);
-                    checkResult = checkResult[0];
-                    if (checkResult.length == 1 && checkResult[0].quantityAvailable >= parseInt(crate.quantity)) {
-                        let reduceSql = "update crate set quantityAvailable = quantityAvailable-? where serialNumber=? and inventoryId=?";
-                        let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
-                        totalQuantityReduced += parseInt(crate.quantity);
-                    } else {
-                        connection.rollback(function() {
-                            connection.release();
-                        })
-                        res.status(400);
-                        res.json("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);
-                        return; 
-                    }            
+                    ]
                 }
-                if (totalQuantityReduced != parseInt(item.quantity)) {
-                    connection.rollback(function() {
-                        connection.release();
-                    });
-                    res.status (400);
-                    res.json("The quantity of lineItem # " + item.id + " doesn't match the sum of quantities in the crates");
-                    return;
-                }
-            }
-            connection.commit(function(err) {
-                if (err) {  
-                    connection.rollback(function() {
-                        connection.release();
-                    });
-                } else {
-                    connection.release();
-                }
-            });
+            ]                
+    */
+
+    const items = req.body;  //each is drawing some amount from some crate to fulfill the order
+    let errors = [];
+    for (let index=0; index < items.length; index++) {
+        let item = items[index];
+        let totalQuantityReduced = 0; 
+        for (let c = 0; c < item.crates.length; c++) {
+            let crate = item.crates[c];
+            //verify sufficient quantity available
+            let checkSql = "select serialNumber, quantityAvailable from crate where serialNumber=?";
+            let checkResult = await connection.promise().query(checkSql,[crate.serialNumber]);
+            checkResult = checkResult[0];
+            if (checkResult.length == 1 && checkResult[0].quantityAvailable >= parseInt(crate.quantity)) {
+                let reduceSql = "update crate set quantityAvailable = quantityAvailable-? where serialNumber=? and inventoryId=?";
+                let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
+                totalQuantityReduced += parseInt(crate.quantity);
+            } else {
+                errors.push("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);                        
+            }            
         }
-
-    });
-    
-    res.status(200);
-    res.json({});
+        if (totalQuantityReduced != parseInt(item.quantity)) {
+            errors.push("The quantity marked for  lineItem # " + item.id + " doesn't match the sum of quantities in the crates");                    
+        }
+    }
+    if (errors.length == 0) {
+        await connection.promise().commit();
+        res.status(200);
+        res.send("fulfilled");
+     } else {
+        connection.rollback(function(){});
+        res.status(400);
+        res.send(errors);
+    }
 });
 
 router.put("/reject/:orderId", async function(req, res) {

@@ -29,19 +29,13 @@ const Purchase = () => {
   }, []);
 
   useEffect(() => {
-    if (myLocation) {
-      
-      axios.get("/api/produce/produceAndCart/" + myLocation).then(function(response) {
-          if (response.status === 200) {
-            setProducts(response.data);
-          } else {
-            setErrorMessage(JSON.stringify(response));
-          }
+    if (myLocation) {      
+      axios.get("/api/produce/produceAndCart/" + myLocation).then(function(response) {          
+            setProducts(response.data);          
       }).catch(function(err) {
         setErrorMessage(err.response.data);
       });
     }
-
   }, [myLocation]);
 
 

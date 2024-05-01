@@ -7,6 +7,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import ErrorDialog  from '../errorDialog';
 
 
 const FulfillOrders = () => {
@@ -47,7 +48,8 @@ const FulfillOrders = () => {
         setOrder(null);
       })
       .catch(function(error) {
-        alert (error);
+        console.log(error.response.data);
+        setErrorMessage(error.response.data);
       });
   }
 
@@ -89,6 +91,10 @@ const FulfillOrders = () => {
   function closeDialog(e) {
     e.preventDefault();
     setOrder(null);
+  }
+  function closeErrorDialog(e) {
+    e.preventDefault();
+    setErrorMessage(null);
   }
 
   return (
@@ -159,7 +165,7 @@ const FulfillOrders = () => {
                           <div>
                             <label>#{crate.serialNumber}</label>&nbsp;
                             <label>Available:</label> {crate.quantityAvailable}<br/>
-                            <input type="number" onChange={(e) => updateCrate(crate, e.target.value)}/>
+                            <input type="number" min="0"  onChange={(e) => updateCrate(crate, e.target.value)}/>
                           </div>
                           
                         ))}                                             
@@ -178,6 +184,8 @@ const FulfillOrders = () => {
                 <button onClick = {closeDialog}>Close</button>
             </DialogActions>
           </Dialog>
+          <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
+
     </ProtectedRoute>
 )}
 export default FulfillOrders;

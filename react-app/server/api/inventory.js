@@ -174,4 +174,14 @@ router.get("/crates/:orderId", async function(req,res) {
     res.json(result);    
 });
 
+router.get("/byLocation/:locationId", async function(req,res) {
+    const locationId = req.params.locationId;
+    const produceSql = "select I.id, P.name from inventory I inner join produce P on (I.produceId = P.id) where locationId=? order by P.name ASC";
+    let produce = await connection.promise().query(produceSql, [locationId]);
+    produce = produce[0];
+    res.status(200);
+    res.json(produce);
+});
+
+
 module.exports = router;

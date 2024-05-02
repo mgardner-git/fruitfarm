@@ -38,3 +38,14 @@
   flex-grow: 5;
   border: 1px solid blue;
 }
+
+.crud_control {
+  display: flex;
+}
+
+.dialog_form {
+  display: flex;
+}
+.dialog_form label {
+  display: block;
+}

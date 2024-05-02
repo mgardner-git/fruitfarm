@@ -13,6 +13,7 @@ const nav = () => {
         <li><Link to = "/myOrders">View Previous Orders</Link></li>
         <li><Link to = "/approveOrders">Approve Orders</Link></li>
         <li><Link to = "/fulfillOrders">Fulfill Orders</Link></li>
+        <li><Link to = "/crates">Manage Crates</Link></li>
     </ul>
   )
 }

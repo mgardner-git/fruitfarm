@@ -2,13 +2,20 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../protectedRoute';
-
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import ErrorDialog  from '../errorDialog';
-
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TableFooter } from '@mui/material';
+import Button from '@mui/material/Button';
 
 const FulfillOrders = () => {
   
@@ -109,32 +116,28 @@ const FulfillOrders = () => {
                 ))}
           </select>
           {locationId != null && orders.length > 0 ? ( 
-          <table id = "fulfillOrders">
-            <thead>
-                <tr><th>id</th><th>Fulfillable</th></tr>
-            </thead>
-            <tbody>              
+          <TableContainer component = {Paper}  id = "fulfillOrders">
+          <Table>
+              <TableHead>
+              <TableRow>   
+                <TableCell>id</TableCell><TableCell>Fulfillable</TableCell>
+              </TableRow>
+            </TableHead>                     
               {orders.map((order) => (
-                <>
-                  <tr>
-                    <td><h3>{order.id}</h3></td>
-                    <td>{order.fulfillable ? "yes":"no"}</td>
+                <TableBody>
+                  <TableRow>
+                    <TableCell><h3>{order.id}</h3></TableCell>
+                    <TableCell>{order.fulfillable ? "yes":"no"}</TableCell>
                     {order.fulfillable && 
-                        <td>
-                            <button onClick={(e) => openFulfillDialog(e, order)}>View Order</button>
-                        </td>
+                        <TableCell>
+                            <Button variant = "contained" onClick={(e) => openFulfillDialog(e, order)}>View Order</Button>
+                        </TableCell>
                     }
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td>
-
-                    </td>
-                  </tr>
-                </>
-              ))}
-            </tbody>
-        </table>  
+                  </TableRow>
+                </TableBody>
+              ))}            
+          </Table>  
+          </TableContainer>
           ): (
             <h3>There are no orders to fulfill</h3>
           )}
@@ -143,21 +146,23 @@ const FulfillOrders = () => {
           <DialogTitle>Fulfill Order</DialogTitle>
           <DialogContent>
             {order && 
-            <table id = "lineItems">
-              <thead>
-                  <tr><th>Name</th><th>Price</th><th>Quantity Ordered</th><th>Quantity Available</th></tr>
-              </thead>
-              <tbody>
+            <TableContainer component = {Paper}  id = "lineItems">
+            <Table>
+              <TableHead>
+                <TableRow>                 
+                  <TableCell>Name</TableCell><TableCell>Price</TableCell><TableCell>Quantity Ordered</TableCell><TableCell>Quantity Available</TableCell>
+                </TableRow>
+              </TableHead>              
               {order.items.map((item,index) => (
-                <>
-                  <tr>
-                      <td>{item.name}</td>
-                      <td>{item.price}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.quantityAvailable}</td>
-                  </tr>
-                  <tr>
-                    <td colspan="4">
+                <TableBody>
+                  <TableRow>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>{item.quantityAvailable}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colspan="4">
                     {fulfillItems.map((crateSet) => (
                        <>
                         <h3>Carts</h3>
@@ -166,22 +171,21 @@ const FulfillOrders = () => {
                             <label>#{crate.serialNumber}</label>&nbsp;
                             <label>Available:</label> {crate.quantityAvailable}<br/>
                             <input type="number" min="0"  onChange={(e) => updateCrate(crate, e.target.value)}/>
-                          </div>
-                          
+                          </div>                          
                         ))}                                             
                        </>
                     ))}
-                    </td>                    
-                  </tr>
-                </>
+                    </TableCell>                    
+                  </TableRow>
+                </TableBody>
               ))}
-              </tbody>
-            </table>
+            </Table>
+            </TableContainer>
             }
             </DialogContent>
             <DialogActions>              
-                <button onClick = {(e) => fulfillOrder(e, order)}>Fulfill</button>
-                <button onClick = {closeDialog}>Close</button>
+              <Button variant = "contained" onClick = {(e) => fulfillOrder(e, order)}>Fulfill</Button>
+              <Button variant = "contained" onClick = {closeDialog}>Close</Button>
             </DialogActions>
           </Dialog>
           <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>

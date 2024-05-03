@@ -1,8 +1,8 @@
 import React from 'react'
-import { ProtectedRoute } from './protectedRoute'
+import { ProtectedRoute } from './components/protectedRoute'
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import ErrorDialog  from './errorDialog';
+import ErrorDialog  from './components/errorDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';

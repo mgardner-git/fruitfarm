@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from './protectedRoute';
+import { ProtectedRoute  } from './components/protectedRoute';
 import {Link} from 'react-router-dom';
 import Button from '@mui/material/Button';
-import ErrorDialog  from './errorDialog';
+import ErrorDialog  from './components/errorDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,7 +14,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
 import Search from './components/search';
-
+import Locations from './components/locations';
 
 const Purchase = () => {
 
@@ -127,12 +127,7 @@ const Purchase = () => {
 
            <div class = "controls"> 
               <label htmlFor="locations">Locations:</label>
-              <select id = "locs" onChange={(e) => setMyLocation(e.target.value)}>
-                <option value = {null}> </option>
-                {locations.map((loc) => (
-                    <option value = {loc.id}> {loc.name}</option>
-                ))}
-              </select>
+              <Locations onChange = {(e) => setMyLocation(e.target.value)}></Locations>
               <Search onBlur={(e) => setSearch(e.target.value)}/>
            </div>      
            {myLocation &&     

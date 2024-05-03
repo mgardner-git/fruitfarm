@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from '../protectedRoute';
+import { ProtectedRoute  } from '../components/protectedRoute';
 import {useNavigate, useSearchParams} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -16,6 +16,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
+import Locations from '../components/locations';
+
 
 const ApproveOrders = () => {
   const navigate = useNavigate();  
@@ -77,14 +79,10 @@ const ApproveOrders = () => {
   return (
     <ProtectedRoute roles="inventoryManager">
         <h1>Approve Orders</h1>
-          <label>Locations</label>
-          
-          <select id = "locs" onChange={(e) => setLocationId(e.target.value)}>
-                <option value = {null}> </option>
-                {locations.map((loc) => (
-                    <option value = {loc.id}> {loc.name}</option>
-                ))}
-          </select>
+        <div class = "controls"> 
+          <label htmlFor="locations">Locations:</label>
+          <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>
+        </div>
           {locationId != null && orders.length > 0 ? ( 
           <TableContainer component = {Paper}  id = "approveOrders">
           <Table>

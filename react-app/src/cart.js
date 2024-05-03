@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from './protectedRoute';
+import { ProtectedRoute  } from './components/protectedRoute';
 import {useNavigate} from 'react-router-dom';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';

@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from './protectedRoute';
+import { ProtectedRoute  } from './components/protectedRoute';
 import {useSearchParams} from 'react-router-dom';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';

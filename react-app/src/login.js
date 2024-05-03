@@ -2,12 +2,12 @@ import {useRef, useState, useEffect} from 'react';
 import Axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import Button from '@mui/material/Button';
-import ErrorDialog  from './errorDialog';
+import ErrorDialog  from './components/errorDialog';
 
 Axios.defaults.withCredentials=true;
 
 
-export default function Login() {
+export default function Login(props) {
     
     const userInputRef  = useRef();
     const errRef = useRef();
@@ -31,22 +31,20 @@ export default function Login() {
             password: password
         };
         Axios.post("/api/users/auth", postBody).then(function(response) {
-            console.log(response);
-            if (response.data) {
-                setSuccess(true);
-                localStorage.setItem("user", JSON.stringify(response.data));
-                if (response.data.role.includes("customer")) {
-                    navigate("/purchase");
-                } else if (response.data.role.includes("inventoryManager")) {
-                    navigate("/approveOrders");
-                }
-                setErrorMessage(null);
-                
-            } else {
-                setSuccess(false);
-                setErrorMessage("Login Failed");
+            setSuccess(true);
+            localStorage.setItem("user", JSON.stringify(response.data));
+
+            if (response.data.role.includes("customer")) {
+                navigate("/purchase");
+            } else if (response.data.role.includes("inventoryManager")) {
+                navigate("/approveOrders");
             }
-        });        
+            props.setUser(response.data);
+            setErrorMessage(null); 
+        }).catch(function(err)  {
+            setSuccess(false);
+            setErrorMessage("Login Failed: " + err.response.data);
+        });
     };
     function closeErrorDialog(e) {
        e.preventDefault();

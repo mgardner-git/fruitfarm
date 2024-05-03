@@ -11,8 +11,11 @@ import ApproveOrders from "./admin/approveOrders";
 import FulfillOrders from "./admin/fulfillOrders";
 import Crates from "./admin/crates";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {useRef, useState, useEffect} from 'react';
+
 
 function App() {
+  let [user,setUser] = useState(null);
 
   return (
     <div className="App">
@@ -26,7 +29,7 @@ function App() {
               <Route path = "cart" element = {<Cart/>}></Route>   
               <Route path = "myOrders" element = {<MyOrders/>}></Route>           
               <Route path = "/" element = {<Purchase />}></Route>
-              <Route path = "login" element = {<Login/>}></Route>
+              <Route path = "login" element = {<Login setUser = {setUser} />}></Route>
               <Route path = "register" element = {<Register/>}></Route>       
               <Route path = "order" element = {<Order/>}></Route>  
               <Route path = "approveOrders" element = {<ApproveOrders/>}></Route>     

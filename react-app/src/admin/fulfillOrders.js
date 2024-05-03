@@ -1,12 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from '../protectedRoute';
+import { ProtectedRoute  } from '../components/protectedRoute';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import ErrorDialog  from '../errorDialog';
+import ErrorDialog  from '../components/errorDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,6 +16,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
 import Button from '@mui/material/Button';
+import Locations from '../components/locations';
+
 
 const FulfillOrders = () => {
   
@@ -107,14 +109,10 @@ const FulfillOrders = () => {
   return (
     <ProtectedRoute roles="inventoryManager">
         <h1>Fulfill Orders</h1>
-          <label>Locations</label>
-          
-          <select id = "locs" onChange={(e) => setLocationId(e.target.value)}>
-                <option value = {null}> </option>
-                {locations.map((loc) => (
-                    <option value = {loc.id}> {loc.name}</option>
-                ))}
-          </select>
+        <div class = "controls"> 
+          <label htmlFor="locations">Locations:</label>
+          <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>
+        </div>
           {locationId != null && orders.length > 0 ? ( 
           <TableContainer component = {Paper}  id = "fulfillOrders">
           <Table>

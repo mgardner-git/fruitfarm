@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import { ProtectedRoute  } from '../protectedRoute';
-import ErrorDialog  from '../errorDialog';
+import { ProtectedRoute  } from '../components/protectedRoute';
+import ErrorDialog  from '../components/errorDialog';
 import Search from '../components/search';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -21,6 +21,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Locations from '../components/locations';
+
 
 const Crates = () => {
   
@@ -184,20 +186,11 @@ const Crates = () => {
         <ProtectedRoute roles="inventoryManager">
         <div id = "manageCrates">
             <h3>Crates</h3>
-            <div class = "crud_control">
-                <div id = "locations">
-                    <label htmlFor="locations">Locations:</label>
-                    <select id = "locs" onChange={(e) => setLocationId(e.target.value)}>
-                        <option value = {null}> </option>
-                        {locations.map((loc) => (
-                            <option value = {loc.id}> {loc.name}</option>
-                        ))}
-                    </select>
-                </div>
-                
-
-                <Search onBlur={(e) => setSearch(e.target.value)}/>
-                
+            <div class = "controls">                
+                <label htmlFor="locations">Locations:</label>
+                <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>    
+                <label>Search:</label>            
+                <Search onBlur={(e) => setSearch(e.target.value)}/>                
                 {inventory && 
                     <div id="add">
                         <AddIcon onClick={(e) => openAddDialog()}></AddIcon>

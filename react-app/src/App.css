@@ -32,6 +32,7 @@
 #nav li 
 {
   text-align: left;
+  list-style-type: none;
 }
 
 #content {
@@ -39,9 +40,6 @@
   border: 1px solid blue;
 }
 
-.crud_control {
-  display: flex;
-}
 
 .dialog_form {
   display: flex;
@@ -57,4 +55,9 @@
 
 .controls {
   display: flex;
+}
+
+.controls label {
+  padding-top:16px;
+  display:inline-block;
 }

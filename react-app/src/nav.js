@@ -1,5 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import { ProtectedLink} from './components/protectedLink';
 const nav = () => {
   return (
     <ul id="nav">
@@ -9,11 +10,11 @@ const nav = () => {
         <li>
             <Link to="/register">Register as a new User</Link>
         </li>
-        <li><Link to = "/purchase">Purchase Fruit</Link></li>
-        <li><Link to = "/myOrders">View Previous Orders</Link></li>
-        <li><Link to = "/approveOrders">Approve Orders</Link></li>
-        <li><Link to = "/fulfillOrders">Fulfill Orders</Link></li>
-        <li><Link to = "/crates">Manage Crates</Link></li>
+        <li><ProtectedLink roles="customer" to = "/purchase">Purchase Fruit</ProtectedLink></li>
+        <li><ProtectedLink roles="customer" to = "/myOrders">View Previous Orders</ProtectedLink></li>
+        <li><ProtectedLink roles = "inventoryManager" to = "/approveOrders">Approve Orders</ProtectedLink></li>
+        <li><ProtectedLink roles = "inventoryManager" to = "/fulfillOrders">Fulfill Orders</ProtectedLink></li>
+        <li><ProtectedLink roles = "inventoryManager" to = "/crates">Manage Crates</ProtectedLink></li>
     </ul>
   )
 }

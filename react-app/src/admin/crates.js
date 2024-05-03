@@ -30,9 +30,10 @@ const Crates = () => {
     const [crates, setCrates] = useState([]);
     const [crate, setCrate] = useState(null); //the one being edited in the dialog
     const [addCrate, setAddCrate] = useState(null); //the one being edited in the add new crate dialog
+    const [search, setSearch] = useState(null);
     useEffect(() => {
         loadCrates();
-    }, [locationId]);
+    }, [locationId, search]);
 
     useEffect(() => {
         if (locationId) {
@@ -43,10 +44,10 @@ const Crates = () => {
     }, [locationId]);
 
     function loadCrates() {
-        axios.get("/api/crates/" + locationId).then(function(response) {
+        let url = "/api/crates/" + locationId + (search == null ? '' : "/" + search);
+        axios.get(url).then(function(response) {
             setCrates(response.data);
         });
-
     }
 
     useEffect(() => {
@@ -179,6 +180,7 @@ const Crates = () => {
         setErrorMessage(null);
       }
       return (
+        <ProtectedRoute roles="inventoryManager">
         <div id = "manageCrates">
             <h3>Crates</h3>
             <div class = "crud_control">
@@ -191,7 +193,7 @@ const Crates = () => {
                         ))}
                     </select>
                 </div>
-                <div id = "search"><input type = "search"></input></div>
+                <div id = "search"><input type = "search" onBlur={(e) => setSearch(e.target.value)}></input></div>
                 {inventory && 
                     <div id="add">
                         <AddIcon onClick={(e) => openAddDialog()}></AddIcon>
@@ -278,6 +280,7 @@ const Crates = () => {
             <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
 
         </div>
+        </ProtectedRoute>
     )
 }
 export default Crates;

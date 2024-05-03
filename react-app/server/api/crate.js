@@ -12,14 +12,16 @@ const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
 
 router.use(verifyLoggedIn);
 
-router.get('/:locationId', async function(req, res) {
+router.get('/:locationId/:search?', async function(req, res) {
     const locationId = req.params.locationId;
-    
+    const search = req.params.search; //may be null
     let sql = `select serialNumber, C.locationId, C.inventoryId, quantityAvailable, P.name
         from crate C left join inventory I on (C.inventoryId = I.id)
         inner join produce P on (P.id = I.produceId)
-        where C.locationId = ? order by serialNumber ASC`;
-    let results = await connection.promise().query(sql, [locationId]);
+        where C.locationId = ? `;
+    sql += search ? ` and serialNumber like ? ` : '';
+    sql += `order by serialNumber`;
+    let results = await connection.promise().query(sql, search ? [locationId, '%' + search + '%'] : [locationId]);
     results = results[0];
     res.status(200);
     res.json(results);

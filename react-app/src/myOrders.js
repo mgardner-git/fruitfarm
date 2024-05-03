@@ -2,10 +2,20 @@ import React from 'react'
 import { ProtectedRoute } from './protectedRoute'
 import {useEffect, useState} from 'react';
 import axios from 'axios';
+import ErrorDialog  from './errorDialog';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TableFooter } from '@mui/material';
+
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     axios.get("/api/order/myOrders").then(function(response) {
@@ -21,31 +31,35 @@ const MyOrders = () => {
     });
   }, []);
 
+  function closeErrorDialog(e) {
+    e.preventDefault();
+    setErrorMessage(null);
+  }
 
   return (
     <ProtectedRoute roles="customer">
-        <h2>myOrders</h2>
+        <h2>Previous Orders</h2>
 
-
-        <table border="1">
-          <thead>
-            <tr> 
-              <th>Id#</th><th>Date</th><th>Status</th><th>Destination</th>
-            </tr>
-
-          </thead>
-          <tbody>
+        <TableContainer component = {Paper}  id = "myOrders">
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Id#</TableCell><TableCell>Date</TableCell><TableCell>Status</TableCell><TableCell>Destination</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
             {myOrders.map((order) => (
-              <tr>
-                <td>{order.id}</td>
-                <td>{order.time}</td>
-                <td>{order.status}</td>
-                <td>{order.street1}&nbsp;{order.street2}&nbsp;{order.city},{order.state}</td>
-              </tr>
+              <TableRow>
+                <TableCell>{order.id}</TableCell>
+                <TableCell>{order.time}</TableCell>
+                <TableCell>{order.status}</TableCell>
+                <TableCell>{order.street1}&nbsp;{order.street2}&nbsp;{order.city},{order.state}</TableCell>
+              </TableRow>
             ))}
-
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
+        </TableContainer>
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
     </ProtectedRoute>
   )
 }

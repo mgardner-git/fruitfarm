@@ -23,29 +23,29 @@ router.use(verifyLoggedIn);
 
 router.get("/myOrders", async function(req, res, next) {
     const sql = 
-    `select O.id, O.userId, O.locationId, A.street1, A.street2, A.city, A.state, A.zip, UNIX_TIMESTAMP(S2.time)*1000 as time , 
-     case 
-       when S2.status=1 then "Awating Approval"
-       when S2.status=2 then "Invoice Sent"
-       when S2.status=3 then "Order Paid, Awaiting Fulfillment"
-       when S2.status=4 then "In Fulfillment"
-       when S2.status=5 then "Shipped"
-       when S2.status=6 then "Received"
-       when S2.status=7 then "Closed"
-       when S2.status=8 then "Rejected"
-    end as status, 
-    S2.username as auth from orders O 
-    inner join (
-        select id, status, time, username, orderId from order_status S
-        where time = 
-            (select MAX(time)
-            from order_status S3
-            where orderId=4) 
-        )
-        S2 on (O.id = S2.orderId)
-        inner join address A on (A.id = O.destination_address) 
-        where O.userId = ?
-      `;
+    `
+    select O.id, O.userId, O.locationId,A.street1, A.street2, A.city, A.state, A.zip, UNIX_TIMESTAMP(S1.time)*1000 as time , 
+    case 
+      when S1.status=1 then "Awating Approval"
+      when S1.status=2 then "Invoice Sent"
+      when S1.status=3 then "Order Paid, Awaiting Fulfillment"
+      when S1.status=4 then "In Fulfillment"
+      when S1.status=5 then "Shipped"
+      when S1.status=6 then "Received"
+      when S1.status=7 then "Closed"
+      when S1.status=8 then "Rejected"
+   end as status, 
+   S1.username as auth 
+   from orders O 
+   inner join (
+   select S2.username, S2.orderId, S2.status, S2.time
+    from order_status S2 inner join
+       (select orderId, MAX(time) as time from order_status group by orderId) S3 ON (S2.orderId = S3.orderId and S2.time = S3.time)
+   ) S1 on (O.id = S1.orderId)
+   inner join address A on (A.id=O.destination_address)
+   where O.userId=?
+   `    
+    
     let orderResults = await connection.promise().query(sql, [req.user]);
     orderResults = orderResults[0];
     res.status(200);

@@ -13,6 +13,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
+import Search from './components/search';
+
 
 const Purchase = () => {
 
@@ -22,7 +24,7 @@ const Purchase = () => {
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState([]);  //error per product, for odering more then available
-  
+  const [search, setSearch] = useState(null);
   
   useEffect(() => {
     axios.get("/api/locations/").then(function(response) {
@@ -37,14 +39,15 @@ const Purchase = () => {
   }, []);
 
   useEffect(() => {
-    if (myLocation) {      
-      axios.get("/api/produce/produceAndCart/" + myLocation).then(function(response) {          
+    if (myLocation) {            
+      let url = "/api/produce/produceAndCart/" + myLocation + (search == null ? '': "/" + search);
+      axios.get(url).then(function(response) {          
             setProducts(response.data);          
       }).catch(function(err) {
         setErrorMessage(err.response.data);
       });
     }
-  }, [myLocation]);
+  }, [myLocation, search]);
 
 
 
@@ -121,7 +124,8 @@ const Purchase = () => {
   return (
       <ProtectedRoute roles="customer manager">
         <div className = "container">
-           <div id = "locations">
+
+           <div class = "controls"> 
               <label htmlFor="locations">Locations:</label>
               <select id = "locs" onChange={(e) => setMyLocation(e.target.value)}>
                 <option value = {null}> </option>
@@ -129,6 +133,7 @@ const Purchase = () => {
                     <option value = {loc.id}> {loc.name}</option>
                 ))}
               </select>
+              <Search onBlur={(e) => setSearch(e.target.value)}/>
            </div>      
            {myLocation &&     
             <TableContainer component = {Paper}  id = "purchasing">

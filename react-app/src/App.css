@@ -49,3 +49,12 @@
 .dialog_form label {
   display: block;
 }
+
+#search {
+  display: flex;
+  border: 1px solid blue;
+}
+
+.controls {
+  display: flex;
+}

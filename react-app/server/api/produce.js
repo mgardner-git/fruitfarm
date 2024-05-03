@@ -29,17 +29,20 @@ router.get('/', async function(req, res) {
 });
 
 //returns all produce at the given location as well as the amount, if any, in the current users cart.
-router.get("/produceAndCart/:location", async function(req,res) {
+router.get("/produceAndCart/:location/:search?", async function(req,res) {
     var locationId = req.params.location;
+    const search = req.params.search; //may be null
 
-    const sql = `select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price 
+    let sql = `select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price 
         from inventory I  inner join produce P  on I.produceId = P.id 
         inner join crate C on (I.id=C.inventoryId) 
-        where I.locationId=? 
-        group by inventoryId 
+        where I.locationId=? `
+    sql += search ? ` and P.name like ? ` : '';
+    sql += `group by inventoryId 
         having quantityAvailable>0`;
+
     console.log(sql);
-    let produceResult = await connection.promise().query(sql, [locationId]);
+    let produceResult = await connection.promise().query(sql, search ? [locationId, '%' + search + '%']:[locationId]);
     produceResult = produceResult[0];
     
     const cartSql = "select C.id, C.inventoryId, C.quantity from cart C inner join inventory I on (C.inventoryId = I.id) where username=? and I.locationId=?";

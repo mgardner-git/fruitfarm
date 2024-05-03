@@ -3,6 +3,7 @@ import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../protectedRoute';
 import ErrorDialog  from '../errorDialog';
+import Search from '../components/search';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -193,7 +194,10 @@ const Crates = () => {
                         ))}
                     </select>
                 </div>
-                <div id = "search"><input type = "search" onBlur={(e) => setSearch(e.target.value)}></input></div>
+                
+
+                <Search onBlur={(e) => setSearch(e.target.value)}/>
+                
                 {inventory && 
                     <div id="add">
                         <AddIcon onClick={(e) => openAddDialog()}></AddIcon>

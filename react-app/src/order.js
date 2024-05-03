@@ -3,6 +3,16 @@ import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from './protectedRoute';
 import {useSearchParams} from 'react-router-dom';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import { TableFooter } from '@mui/material';
+
 
 const Order = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,37 +58,40 @@ const Order = () => {
       {order == null && 
       <>
           <h1>Order</h1>
-          <h2>{cart.name}</h2>
-          <table id = "cart">
-            <thead>
-              <tr>
-                <th>name</th>  
-                <th>quantity</th>
-                <th>Price</th>                
-              </tr>  
-            </thead>    
-            <tbody>
+          <h3>{cart.name}</h3>
+          <TableContainer component = {Paper}  id = "purchasing">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>name</TableCell>  
+                  <TableCell>quantity</TableCell>
+                  <TableCell>Price</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
               {cart.items.map((item) => 
-                  <tr>
-                    <td>{item.name}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.price}</td>
-                  </tr>
+                  <TableRow>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.quantity}</TableCell>
+                    <TableCell>{item.price}</TableCell>
+                  </TableRow>
               )}
-              <tr>
-                <td colspan="3" align = "right"><h3>Order Total:</h3></td>
-                <td>{cart.total}</td>
-              </tr>
-            </tbody>
-          </table>
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colspan="3" align = "right"><h3>Order Total:</h3></TableCell>
+                  <TableCell> {cart.total}</TableCell>
+                </TableRow>              
+              </TableFooter>
+            </Table>
+          </TableContainer>
           <label>Select Address:</label>
           <select name = "address" value = "address">
           {addresses.map((addr) => 
               <option key = {addr.id} value = {addr.id}>{addr.street1}</option>
           )}
-          </select>
-       
-         <button onClick={sendOrder}>Finalize Order</button>
+          </select>       
+         <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
         </>
         }
          {order &&

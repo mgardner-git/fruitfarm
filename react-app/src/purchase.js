@@ -5,6 +5,14 @@ import { ProtectedRoute  } from './protectedRoute';
 import {Link} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import ErrorDialog  from './errorDialog';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TableFooter } from '@mui/material';
 
 const Purchase = () => {
 
@@ -123,41 +131,41 @@ const Purchase = () => {
               </select>
            </div>      
            {myLocation &&     
-            <table id = "fruit"  border='1'>
-                <thead>
-                  <tr><th>Name</th><th>Qty. Available</th><th>Price</th><th>Purchase Quantity</th><th width = "190"></th></tr>
-                </thead>
-                <tbody>
+            <TableContainer component = {Paper}  id = "purchasing">
+              <Table>
+                <TableHead>
+                  <TableRow>
+                     <TableCell>Name</TableCell><TableCell>Qty. Available</TableCell><TableCell>Price</TableCell><TableCell>Purchase Quantity</TableCell><TableCell width = "190"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
                   {products.map((product,index) => (
-                    <tr>
-                      <td>{product.name}</td>
-                      <td>{product.quantityAvailable}</td>
-                      <td>{product.price}</td>
-                      <td>
+                    <TableRow>
+                      <TableCell>{product.name}</TableCell>
+                      <TableCell>{product.quantityAvailable}</TableCell>
+                      <TableCell>{product.price}</TableCell>
+                      <TableCell>
                         <input type="number" id = {product.id} min="0" value = {product.quantity}
                           onChange= {(e) => updateQuantity(product.id, e.target.value)}>
                         </input>
-                      </td>
-                     
-                      <td>
+                      </TableCell>                     
+                      <TableCell>
                         {errors[index]}
-
-                      </td>
-                     
-                    </tr>
+                      </TableCell>                     
+                    </TableRow>
                   ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td align = "right" colspan = "4">
-                      <button onClick = {updateCart}>Update Cart</button>
-                      
-                    </td>
-                  </tr>
-                </tfoot>
-            </table>
-           }
-           <Button variant = "contained"><Link to="/cart">Go To Cart</Link></Button>
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell align = "right" colspan = "4">
+                      <Button variant = "contained" onClick = {updateCart}>Update Cart</Button>
+                      <Button variant = "contained"><Link to="/cart">Go To Cart</Link></Button>           
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
+           }           
         </div>
         <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
       </ProtectedRoute>

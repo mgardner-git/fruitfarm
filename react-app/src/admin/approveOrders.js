@@ -8,6 +8,14 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TableFooter } from '@mui/material';
 
 const ApproveOrders = () => {
   const navigate = useNavigate();  
@@ -78,26 +86,28 @@ const ApproveOrders = () => {
                 ))}
           </select>
           {locationId != null && orders.length > 0 ? ( 
-          <table id = "approveOrders">
-            <thead>
-                <tr><th>id</th><th>Fulfillable</th></tr>
-            </thead>
-            <tbody>              
-              {orders.map((order) => (
-                <>
-                  <tr>
-                    <td><h3>{order.id}</h3></td>
-                    <td>{order.fulfillable ? "yes":"no"}</td>
+          <TableContainer component = {Paper}  id = "approveOrders">
+          <Table>
+            <TableHead>
+              <TableRow>                    
+                <TableCell>id</TableCell><TableCell>Fulfillable</TableCell>
+              </TableRow>
+            </TableHead>
+            {orders.map((order) => (
+              <TableBody>
+                <TableRow>
+                    <TableCell><h3>{order.id}</h3></TableCell>
+                    <TableCell>{order.fulfillable ? "yes":"no"}</TableCell>
                     {order.fulfillable && 
-                        <td>
+                        <TableCell>
                             <Button variant = "contained" onClick={(e) => openApproveDialog(e,order)}>View Order</Button>
-                        </td>
+                        </TableCell>
                     }
-                  </tr>                  
-                </>
+                </TableRow>
+              </TableBody>                
               ))}
-            </tbody>
-        </table>  
+          </Table>  
+          </TableContainer>
           ): (
             <h3>There are no orders to approve</h3>
           )}
@@ -107,22 +117,25 @@ const ApproveOrders = () => {
           <DialogTitle>Approve Order</DialogTitle>
           <DialogContent>
             {order && 
-            <table id = "lineItems">
-              <thead>
-                  <tr><th>Name</th><th>Price</th><th>Quantity Ordered</th><th>Quantity Available</th></tr>
-              </thead>
-              <tbody>
-              {order.items.map((item,index) => (
-                  <tr>
-                      <td>{item.name}</td>
-                      <td>{item.price}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.quantityAvailable}</td>
-                  </tr>
-
-              ))}
-              </tbody>
-            </table>
+            <TableContainer component = {Paper}  id = "lineItems">
+              <Table>
+                <TableHead>
+                  <TableRow>              
+                    <TableCell>Name</TableCell><TableCell>Price</TableCell><TableCell>Quantity Ordered</TableCell><TableCell>Quantity Available</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                {order.items.map((item,index) => (
+                  <TableRow>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>{item.quantityAvailable}</TableCell>
+                  </TableRow>
+                ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
             }
           </DialogContent>
           <DialogActions>          

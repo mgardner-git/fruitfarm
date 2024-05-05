@@ -174,14 +174,28 @@ router.get("/crates/:orderId", async function(req,res) {
     res.json(result);    
 });
 
-router.get("/byLocation/:locationId", async function(req,res) {
+router.get("/byLocation/:locationId/:search?", async function(req,res) {
     const locationId = req.params.locationId;
-    const produceSql = "select I.id, P.name from inventory I inner join produce P on (I.produceId = P.id) where locationId=? order by P.name ASC";
-    let produce = await connection.promise().query(produceSql, [locationId]);
+    const search = req.params.search;
+    const produceSql = `select I.id, I.produceId, P.name, I.price from 
+        inventory I inner join produce P on (I.produceId = P.id) 
+        where locationId=? ` + 
+        (search ? ` and P.name like ? ` : ``) +
+        ` order by P.name ASC`;
+    console.log(produceSql);
+    let produce = await connection.promise().query(produceSql, search ? [locationId, '%' + search + '%' ]:[locationId]);
     produce = produce[0];
     res.status(200);
     res.json(produce);
 });
 
-
+router.post("/", async function(req,res) {
+    let inv = req.body;
+    const sql = "replace into inventory(id, price, locationId, produceId) VALUES (?,?,?,?)";
+    console.log(sql);
+    console.log(req.user);
+    let result = await connection.promise().query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
+    res.status(200);
+    res.json(result);    
+});
 module.exports = router;

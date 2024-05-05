@@ -28,6 +28,19 @@ router.get('/', async function(req, res) {
     });
 });
 
+//returns all produce that are not already marked as inventory items in the given location
+//(these can be used co create new inventory items)
+router.get("/all/:locationId", async function(req, res) {
+    let locationId = req.params.locationId;
+    const sql = `select P.id, P.name, P.description from produce P where P.id not in 
+    (select produceId from inventory I where I.locationId=?)`
+
+    let result = await connection.promise().query(sql,[locationId]);
+    result = result[0];
+    res.status(200);
+    res.json(result);
+});
+
 //returns all produce at the given location as well as the amount, if any, in the current users cart.
 router.get("/produceAndCart/:location/:search?", async function(req,res) {
     var locationId = req.params.location;
@@ -41,7 +54,7 @@ router.get("/produceAndCart/:location/:search?", async function(req,res) {
     sql += `group by inventoryId 
         having quantityAvailable>0`;
 
-    console.log(sql);
+    
     let produceResult = await connection.promise().query(sql, search ? [locationId, '%' + search + '%']:[locationId]);
     produceResult = produceResult[0];
     
@@ -60,8 +73,16 @@ router.get("/produceAndCart/:location/:search?", async function(req,res) {
         }
     }
     res.status(200);
-    res.json(produceResult);
-    
+    res.json(produceResult);    
+});
+
+router.post("/", async function(req,res) {
+    let product = req.body;
+    const sql = "insert into produce(name, description) values(?,?)";
+    var result = await connection.promise().query(sql, [product.name, product.description]);
+    res.status(200);
+    res.json(result[0].insertId);
+
 });
 
 module.exports = router;

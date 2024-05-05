@@ -9,6 +9,7 @@ import Cart from "./cart";
 import Order from "./order";
 import ApproveOrders from "./admin/approveOrders";
 import FulfillOrders from "./admin/fulfillOrders";
+import Inventory from "./admin/inventory";
 import Crates from "./admin/crates";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {useRef, useState, useEffect} from 'react';
@@ -35,7 +36,7 @@ function App() {
               <Route path = "approveOrders" element = {<ApproveOrders/>}></Route>     
               <Route path = "fulfillOrders" element = {<FulfillOrders/>}></Route>
               <Route path = "crates" element = {<Crates/>}></Route>
-
+              <Route path = "inventory" element = {<Inventory/>}></Route>
             </Routes>          
           </div>
         </BrowserRouter> 

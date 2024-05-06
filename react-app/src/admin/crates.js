@@ -224,7 +224,7 @@ const Crates = () => {
                     {crate && 
                         <div class = "dialog_form">
                             <div>
-                                <label> Serial Number</label>
+                                <label> Type:</label>
                                 <Select onChange = {(e) => updateCrateType(crate, e.target.value)} label = "produce type" value = {crate.inventoryId}>
                                     {inventory.map((inv) => (
                                         <MenuItem value = {inv.id}>{inv.name}</MenuItem>
@@ -232,7 +232,7 @@ const Crates = () => {
                                 </Select>
                             </div>
                             <div>
-                                <label>Quantity</label>
+                                <label>Quantity:</label>
                                 <input type = "number" value = {crate.quantityAvailable} onChange = {(e) => updateCrateQuantity(crate, e.target.value)}></input>
                             </div>
                         </div>                        
@@ -263,9 +263,7 @@ const Crates = () => {
                             <div>
                                 <label>Quantity</label>
                                 <input type = "number" value = {addCrate.quantityAvailable} onChange = {(e) => updateCrateQuantity(addCrate, e.target.value)}></input>
-                            </div>  
-                            <label>{addCrate.serialNumber}</label>    
-                            <label>{crate == null}</label>                      
+                            </div>                     
                         </div>
                     }       
                 </DialogContent>

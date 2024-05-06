@@ -45,7 +45,13 @@ const Produce = () => {
         setErrorMessage(null);
     }
     function saveProduct() {
+        axios.post("/api/produce/", product).then(function(response) {
+            setProduct(null);
+            loadProduce();
 
+        }).catch(function(err) {
+            setErrorMessage(err.response.data);
+        })
     }
     function openDialog(inProd) {
         console.log(inProd);

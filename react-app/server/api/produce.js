@@ -45,7 +45,7 @@ router.get("/all/:locationId", async function(req, res) {
 router.get("/search/:search?", async function(req, res) {
 
     let search =req.params.search;
-    const sql = "select P.id, P.name, P.description from produce P" + (search? " where name like ?":"");
+    const sql = "select P.id, P.name, P.description from produce P" + (search? " where name like ?":"") + " order by name asc";
     let result = await connection.promise().query(sql, search? ["%" + search + "%"]:[]);
     result = result[0];
     res.status(200);
@@ -89,9 +89,10 @@ router.get("/produceAndCart/:location/:search?", async function(req,res) {
 });
 
 router.post("/", async function(req,res) {
-    let product = req.body;
-    const sql = "insert into produce(name, description) values(?,?)";
-    var result = await connection.promise().query(sql, [product.name, product.description]);
+    let product = req.body;    
+
+    const sql = "insert into produce(id, name, description) values(?, ?,?) on duplicate key update name=?, description=?";
+    var result = await connection.promise().query(sql, [product.id, product.name, product.description, product.name, product.description]);
     res.status(200);
     res.json(result[0].insertId);
 

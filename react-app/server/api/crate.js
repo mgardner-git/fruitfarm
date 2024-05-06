@@ -8,6 +8,8 @@ const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 const moment = require('moment');
+
+
 const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
 
 router.use(verifyLoggedIn);
@@ -44,23 +46,27 @@ router.put('/:serialNumber', async function(req, res) {
     res.json("updated");
 });
 
-router.post('/:serialNumber', async function(req, res) {
-    //avoid an attempt at a duplicate serial number/primary key
-    let checkSql = "select serialNumber from crate where serialNumber = ?";
-    const crate = req.body;
-    let checkResult = await connection.promise().query(checkSql, [crate.serialNumber]);
-    let num = checkResult[0].length;
-    if (num == 0) {
-    
-        let sql = "insert into  crate (serialNumber, locationId, inventoryId, quantityAvailable) values (?,?,?,?)";
+router.post('/:serialNumber', async function(req, res, next) {
+    try {
+        //avoid an attempt at a duplicate serial number/primary key
+        let checkSql = "select serialNumber from crate where serialNumber = ?";
+        const crate = req.body;
+        let checkResult = await connection.promise().query(checkSql, [crate.serialNumber]);
+        let num = checkResult[0].length;
+        if (num == 0) {
         
-        let serialNumber = req.params.serialNumber;
-        let updateResult = await connection.promise().query(sql, [crate.serialNumber, crate.locationId, crate.inventoryId, crate.quantityAvailable]);
-        res.status(200);
-        res.json("created");
-    } else {
-        res.status(400);
-        res.send("The serial number " + crate.serialNumber + " is already being used");
+            let sql = "insert into  crate (serialNumber, locationId, inventoryId, quantityAvailable) values (?,?,?,?)";
+            
+            let serialNumber = req.params.serialNumber;
+            let updateResult = await connection.promise().query(sql, [crate.serialNumber, crate.locationId, crate.inventoryId, crate.quantityAvailable]);
+            res.status(200);
+            res.json("created");
+        } else {
+            res.status(400);
+            res.send("The serial number " + crate.serialNumber + " is already being used");
+        }
+    } catch (err) {
+        next(err.message);
     }
 });
 

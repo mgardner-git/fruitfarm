@@ -66,6 +66,8 @@ const Inventory = () => {
         axios.post("/api/inventory", item).then(function(response) {            
             setItem(null);
             loadInventory();
+        }).catch(function (err) {
+            setErrorMessage(err.response.data);
         });
     }
     function openDialog(inItem) {        
@@ -138,6 +140,8 @@ const Inventory = () => {
             setErrorMessage(err.response.data);
         });
     }
+
+
       return (
         <ProtectedRoute roles="inventoryManager">
         <div id = "manageInventory">

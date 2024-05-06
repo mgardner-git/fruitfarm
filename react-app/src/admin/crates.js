@@ -93,7 +93,7 @@ const Crates = () => {
                 loadCrates();
                 setCrate(null);
             }).catch(function(err) {
-                setErrorMessage(err.response.data)
+                setErrorMessage(err.response.data);
             });   
         } else if (addCrate) {
             if (addCrate.inventoryId == null) {
@@ -101,9 +101,9 @@ const Crates = () => {
             }
             axios.post("/api/crates/" + addCrate.serialNumber, addCrate).then(function(response) {
                 loadCrates();
-                setAddCrate(null);
+                setCrate(null);
             }).catch(function(err) {
-                setErrorMessage(err.response.data)
+                setErrorMessage(err.response.data);
             });
         }
     }

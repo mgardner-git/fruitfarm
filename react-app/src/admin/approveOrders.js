@@ -17,6 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
 import Locations from '../components/locations';
+import ErrorDialog  from '../components/errorDialog';
 
 
 const ApproveOrders = () => {
@@ -25,6 +26,7 @@ const ApproveOrders = () => {
   const [orders, setOrders] = useState([]);
   const [locations, setLocations] = useState([]);
   const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
+  const [errorMessage, setErrorMessage] = useState(null); 
 
     
   useEffect(() => {
@@ -43,6 +45,8 @@ const ApproveOrders = () => {
   function loadOrders() {
     axios.get("/api/inventory/ordersToApprove/" + locationId).then(function(response) {
         setOrders(response.data);
+    }).catch(function(err) {
+      setErrorMessage(err.response.data);
     });
   }
   function approveOrder(e, orderId) {
@@ -51,6 +55,8 @@ const ApproveOrders = () => {
     axios.put("/api/inventory/approve/" + orderId).then(function(response) {
         loadOrders();
         setOrder(null);
+    }).catch(function(err) {
+      setErrorMessage(err.response.data);
     });
   }
 
@@ -60,6 +66,8 @@ const ApproveOrders = () => {
     axios.put("/api/inventory/reject/" + orderId).then(function(response) {
         loadOrders();
         setOrder(null);
+    }).catch(function(err) {
+      setErrorMessage(err.response.data);
     });
   }
 
@@ -73,6 +81,10 @@ const ApproveOrders = () => {
   function closeDialog(e) {
     e.preventDefault();
     setOrder(null);
+  }
+  function closeErrorDialog(e) {
+    e.preventDefault();
+    setErrorMessage(null);
   }
 
 
@@ -142,6 +154,7 @@ const ApproveOrders = () => {
               <Button variant = "contained" onClick = {closeDialog} >Close</Button>
           </DialogActions>
         </Dialog>
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
     </ProtectedRoute>
 )}
 export default ApproveOrders;

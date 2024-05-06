@@ -31,7 +31,8 @@ const ProduceDialog = (props) => {
                     <label>Description:</label>
                     <textarea value = {props.product.description} onChange = {(e) => updateDescription(e.target.value)}/>
                 </div>
-            </DialogContent>                }
+            </DialogContent>                
+        }
             
             <DialogActions>
             <Button variant = "contained" onClick = {props.saveProduct}>Save</Button>

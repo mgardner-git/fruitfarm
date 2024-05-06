@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import {faCheck, faTimes, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Link} from 'react-router-dom';
+import ErrorDialog  from './components/errorDialog';
 
 
 const USER_REGEX = /^[a-zA-z][a-zA-Z0-9-_]{4,16}$/
@@ -64,22 +65,25 @@ const Register = () => {
       Axios.post("/api/users/register",  postBody).then(function(response) {
         console.log(response);
         console.log(response.status);
-        if (response.status !== "500"){
+
           setSuccess(true);
-        } else {
+
           setErrorMessage(JSON.stringify(response));
           
-        }        
+      }).catch(function(err) {
+        setErrorMessage(err.response.data);
       });
     }
+  }
+  function closeErrorDialog(e) {
+    e.preventDefault();
+    setErrorMessage(null);
   }
 
   return (
     <section>
         <form onSubmit = {handleSubmit}>
-            <p ref={errorRef} className={errorMessage ? "error": "offscreen"} aria-live="assertive">
-                {errorMessage}
-            </p>
+
             <h1>Register</h1>
             <section>
                 <label htmlFor="username">Username:</label>
@@ -133,6 +137,8 @@ const Register = () => {
             </p>
             <button disabled = {!validName || !validPassword? true : false}>Sign Up</button>
         </form>
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
+
     </section>
   );
 

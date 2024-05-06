@@ -2,7 +2,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-  
+import Button from '@mui/material/Button';
+
+
 const ErrorDialog = (props) => {
     return (
 
@@ -22,8 +24,8 @@ const ErrorDialog = (props) => {
             
         </DialogContent>
           <DialogActions>                              
-                <button onClick = {props.close}>Close</button>
-            </DialogActions>
+            <Button variant = "contained" onClick = {props.close}>Close</Button>
+          </DialogActions>
         </Dialog>
 
     )

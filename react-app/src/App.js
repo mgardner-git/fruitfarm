@@ -11,6 +11,7 @@ import ApproveOrders from "./admin/approveOrders";
 import FulfillOrders from "./admin/fulfillOrders";
 import Inventory from "./admin/inventory";
 import Crates from "./admin/crates";
+import Produce from "./admin/produce";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {useRef, useState, useEffect} from 'react';
 
@@ -37,6 +38,7 @@ function App() {
               <Route path = "fulfillOrders" element = {<FulfillOrders/>}></Route>
               <Route path = "crates" element = {<Crates/>}></Route>
               <Route path = "inventory" element = {<Inventory/>}></Route>
+              <Route path = "produce" element = {<Produce/>}> </Route>
             </Routes>          
           </div>
         </BrowserRouter> 

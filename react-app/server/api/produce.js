@@ -41,6 +41,18 @@ router.get("/all/:locationId", async function(req, res) {
     res.json(result);
 });
 
+//returns all produce, matching search if given
+router.get("/search/:search?", async function(req, res) {
+
+    let search =req.params.search;
+    const sql = "select P.id, P.name, P.description from produce P" + (search? " where name like ?":"");
+    let result = await connection.promise().query(sql, search? ["%" + search + "%"]:[]);
+    result = result[0];
+    res.status(200);
+    res.json(result);
+
+});
+
 //returns all produce at the given location as well as the amount, if any, in the current users cart.
 router.get("/produceAndCart/:location/:search?", async function(req,res) {
     var locationId = req.params.location;

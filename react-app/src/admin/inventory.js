@@ -21,8 +21,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Search from '../components/search';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
-
+import ProduceDialog from '../components/produceDialog';
 
 
 const Inventory = () => {
@@ -64,8 +63,7 @@ const Inventory = () => {
 
     function saveItem() {
         //may be a create or edit
-        axios.post("/api/inventory", item).then(function(response) {
-            alert("completed");
+        axios.post("/api/inventory", item).then(function(response) {            
             setItem(null);
             loadInventory();
         });
@@ -210,26 +208,8 @@ const Inventory = () => {
                     <Button variant = "contained" onClick = {closeDialog} >Close</Button>
                </DialogActions>    
             </Dialog>
-            <Dialog open={product != null} id = "produceDialog"  onClose={closeProduceDialog}>
-                <DialogTitle>Produce</DialogTitle>
-                {product && 
-                    <DialogContent>
-                        <div>
-                            <label>Name:</label>
-                            <input type = "text" onChange={(e) => product.name = e.target.value}/>
-                        </div>
-                        <div>
-                            <label>Description:</label>
-                            <textarea onChange = {(e) => product.description = e.target.value}/>
-                        </div>
-                    </DialogContent>
-                }
-                    <DialogActions>
-                       <Button variant = "contained" onClick = {saveProduct}>Save</Button>
-                       <Button variant = "contained" onClick = {closeProduceDialog} >Close</Button>
-                   </DialogActions> 
-                </Dialog>
-            <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
+            <ProduceDialog closeProduceDialog={closeProduceDialog} product = {product} saveProduct={saveProduct}/>
+            <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
         </div>
     </ProtectedRoute>
     )

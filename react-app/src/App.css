@@ -65,3 +65,13 @@
 .MuiDialog-container.MuiDialog-scrollPaper {
   border: 2px solid blue;
 }
+
+.gridForm {
+  display: grid;
+  grid-template-columns: 100px 150px;
+  grid-template-rows: auto;
+}
+
+th {
+  font-weight: bold;
+}

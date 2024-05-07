@@ -14,7 +14,8 @@ import Button from '@mui/material/Button';
 import { TableFooter } from '@mui/material';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
+import AddIcon from '@mui/icons-material/Add';
+import AddressDialog from './components/addressDialog';
 
 const Order = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,7 +23,8 @@ const Order = () => {
   const [cart, setCart] = useState({
     items: []
   });
-  const [address, setAddress] = useState({});
+  const [address, setAddress] = useState({}); //the selected address
+  const [newAddress, setNewAddress] = useState(null);
   const [addresses, setAddresses] = useState([]); 
   const [order, setOrder] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -36,15 +38,18 @@ const Order = () => {
     .catch(function(err) {
       setErrorMessage(err.response.data);
     });
-    axios.get("/api/address/byUser").then(function(response) {
-      setAddresses(response.data);
-      setAddress(response.data[0]);
-      console.log(addresses);
-      console.log(address);
-    });
+    loadAddresses();
 
   },[]);
 
+  function loadAddresses() {
+    axios.get("/api/address/byUser").then(function(response) {
+      setAddresses(response.data);
+      setAddress(response.data[0]);
+      setNewAddress(null);
+    });
+
+  }
   function sendOrder(event){
     event.preventDefault();
     axios.post("/api/order/" + locationId,{address: address.id}).then(function(response) {
@@ -56,6 +61,12 @@ const Order = () => {
     });
   }
 
+  function openAddressDialog() {
+    setNewAddress({});
+  }
+  function closeDAddressDialog() {
+    setNewAddress(null);
+  }
   function updateAddress(event) {
     let newAddress = {
       id: event.target.value
@@ -100,9 +111,12 @@ const Order = () => {
             <MenuItem key = {addr.id} value = {addr.id}> {addr.street1}</MenuItem>             
           )}
           </Select>       
+          <AddIcon onClick={(e) => openAddressDialog({})}></AddIcon>   
          <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
         </>
         }
+        <AddressDialog onClose = {closeDAddressDialog} setAddress = {setNewAddress} address = {newAddress} onSave={loadAddresses}/>
+
          {order &&
           <div id ="result">
               <h2>Orders</h2>

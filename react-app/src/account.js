@@ -3,6 +3,7 @@ import { ProtectedRoute } from './components/protectedRoute'
 import {useEffect, useState} from 'react';
 import axios from 'axios';
 import ErrorDialog  from './components/errorDialog';
+import AddressDialog from './components/addressDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,10 +13,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 
 
 import Button from '@mui/material/Button';
@@ -96,42 +93,12 @@ const Account  = () => {
                                 <EditIcon onClick={(e) => openDialog(address)}></EditIcon>
                             </TableCell>
                           </TableRow>
-                        ))};
+                        ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Dialog open={address != null} id = "addressDialog" onClose={closeDialog}>
-                    <DialogTitle>Update Address</DialogTitle>
-                    {address && 
-                    <DialogContent>
-                        <div>
-                            <label>Street 1</label>                        
-                            <input type = "text" value = {address.street1} onChange = {updateAddress} id = "street1"/>
-                        </div>
-                        <div>
-                            <label>Street 2</label>
-                            <input type = "text" value = {address.street2} onChange = {updateAddress} id = "street2"/>
-                        </div>
-                        <div>
-                            <label>city</label>
-                            <input type = "text" value = {address.city} onChange = {updateAddress} id = "city"/>
-                        </div>
-                        <div>
-                            <label>state</label>
-                            <input type = "text" value = {address.state} onChange = {updateAddress} id = "state"/>
-                        </div>
-                        <div>
-                            <label>Zip:</label>
-                            <input type = "text" value = {address.zip} onChange = {updateAddress} id = "zip"/>
-                        </div>
-                    </DialogContent>
-                    }
-                    <DialogActions>          
-                        <Button variant = "contained" onClick = {saveAddress}>Save</Button> 
-                        <Button variant = "contained" onClick = {closeDialog} >Close</Button>
-                    </DialogActions>
-                </Dialog>
             </div>
+            <AddressDialog onClose = {closeDialog} setAddress = {setAddress} address = {address} onSave={loadAddresses}/>
             <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
 
         </ProtectedRoute>

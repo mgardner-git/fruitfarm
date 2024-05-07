@@ -180,14 +180,15 @@ const Inventory = () => {
                 <DialogTitle>Inventory</DialogTitle>
                 {item && 
                 <DialogContent>
+                    <div class="gridForm">
                     {item.id && 
-                        <div>
-                            <label>ID:</label>&nbsp;
+                        <>
+                            <label>ID:</label>
                             <span>{item.id}</span>
-                        </div>
+                        </>
                     }
-                    <div>
-                        <label>Type:</label>&nbsp;
+                    
+                        <label>Type:</label>
                         {item.id == null?
                             <div>        
                                 <Select onChange = {(e) => updateProduceType(e.target.value)} label = "produce type" value = {item.produceId}>
@@ -200,8 +201,6 @@ const Inventory = () => {
                         :
                             <span>{item.name}</span>
                         }
-                    </div>
-                    <div>
                         <label>Price:</label>
                         <input type = "number" value = {item.price} step = ".01" onChange={(e) => updatePrice(e.target.value)} />
                     </div>

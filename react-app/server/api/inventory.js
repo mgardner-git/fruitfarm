@@ -189,13 +189,21 @@ router.get("/byLocation/:locationId/:search?", async function(req,res) {
     res.json(produce);
 });
 
-router.post("/", async function(req,res) {
-    let inv = req.body;
-    const sql = "replace into inventory(id, price, locationId, produceId) VALUES (?,?,?,?)";
-    console.log(sql);
-    console.log(req.user);
-    let result = await connection.promise().query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
-    res.status(200);
-    res.json(result);    
+router.post("/", async function(req,res,next) {
+    try {
+        let inv = req.body;
+        if (inv.produceId) {
+
+        }
+        const sql = "replace into inventory(id, price, locationId, produceId) VALUES (?,?,?,?)";
+        console.log(sql);
+        console.log(req.user);
+        let result = await connection.promise().query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
+        res.status(200);
+        res.json(result);
+    } catch (error) {
+        return next(error);
+    }
+
 });
 module.exports = router;

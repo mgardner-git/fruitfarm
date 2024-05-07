@@ -10,7 +10,7 @@ const nav = () => {
         <li>
             <Link to="/register">Register as a new User</Link>
         </li>
-        <li><ProtectedLink roles="customer" to = "/purchase">Purchase Fruit</ProtectedLink></li>
+        <li><ProtectedLink roles="customer inventoryManager" to = "/purchase">Purchase Fruit</ProtectedLink></li>
         <li><ProtectedLink roles="customer" to = "/myOrders">View Previous Orders</ProtectedLink></li>
         <li><ProtectedLink roles="customer" to = "/account">Account</ProtectedLink></li>
         <li><ProtectedLink roles = "inventoryManager" to = "/approveOrders">Approve Orders</ProtectedLink></li>

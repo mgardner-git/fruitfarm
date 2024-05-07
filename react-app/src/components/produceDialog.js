@@ -22,18 +22,14 @@ const ProduceDialog = (props) => {
         <DialogTitle>Produce</DialogTitle>
         {props.product && 
             <DialogContent>
-
-                <div>
-                    <label>Name:</label>
-                    <input value = {props.product.name} type = "text" onChange={(e) => updateName(e.target.value)}/>
-                </div>
-                <div>
+                 <div class="gridForm">
+                   <label>Name:</label>
+                   <input value = {props.product.name} type = "text" onChange={(e) => updateName(e.target.value)}/>
                     <label>Description:</label>
                     <textarea value = {props.product.description} onChange = {(e) => updateDescription(e.target.value)}/>
                 </div>
-            </DialogContent>                
-        }
-            
+            </DialogContent>
+        }            
             <DialogActions>
             <Button variant = "contained" onClick = {props.saveProduct}>Save</Button>
             <Button variant = "contained" onClick = {props.closeProduceDialog} >Close</Button>

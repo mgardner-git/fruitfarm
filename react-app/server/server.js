@@ -23,8 +23,8 @@ app.use("/api/address/", address);
 app.use("/api/inventory/", inventory);
 app.use("/api/crates/", crate);
 const jsonErrorHandler = (err, req, res, next) => {
-    res.status(404).send(err);
-    return next();
+    res.status(500).send(err.message);
+    
   };
   app.use(jsonErrorHandler);
 

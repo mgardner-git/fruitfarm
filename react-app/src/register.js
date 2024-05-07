@@ -5,7 +5,7 @@ import {faCheck, faTimes, faInfoCircle} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Link} from 'react-router-dom';
 import ErrorDialog  from './components/errorDialog';
-
+import { Button } from "@mui/material";
 
 const USER_REGEX = /^[a-zA-z][a-zA-Z0-9-_]{4,16}$/
 const PWD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{4,16}$/;;
@@ -28,7 +28,7 @@ const Register = () => {
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const Register = () => {
   }, [password, matchPassword])
 
   useEffect(() => {
-    setErrorMessage('');
+ 
   }, [user, password, matchPassword])
 
   const handleSubmit = async (e) => {
@@ -63,12 +63,8 @@ const Register = () => {
         email: email
       }
       Axios.post("/api/users/register",  postBody).then(function(response) {
-        console.log(response);
-        console.log(response.status);
-
-          setSuccess(true);
-
-          setErrorMessage(JSON.stringify(response));
+           setSuccess(true);
+          
           
       }).catch(function(err) {
         setErrorMessage(err.response.data);
@@ -135,7 +131,9 @@ const Register = () => {
               You have registered as {user}. <br/>
               <Link to="/login">Login</Link>
             </p>
-            <button disabled = {!validName || !validPassword? true : false}>Sign Up</button>
+            
+
+            <Button onClick={handleSubmit} variant="contained" disabled = {!validName || !validPassword}>Sign Up</Button>
         </form>
         <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
 

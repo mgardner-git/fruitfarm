@@ -14,7 +14,6 @@ import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 
-
 import Button from '@mui/material/Button';
 
 
@@ -70,7 +69,7 @@ const Account  = () => {
                 <h3>Addresses</h3>
                 <div class = "controls">                                    
                     <div id="add">
-                        <AddIcon onClick={(e) => openDialog({})}></AddIcon>
+                        <Button onClick={(e) => openDialog({})}><AddIcon></AddIcon>Add Address</Button>
                     </div>
                 </div>
                 <TableContainer component = {Paper}  id = "purchasing">

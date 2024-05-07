@@ -62,7 +62,7 @@
   display:inline-block;
 }
 
-.MuiDialog-container.MuiDialog-scrollPaper {
+.MuiDialog-paper  {
   border: 2px solid blue;
 }
 
@@ -72,6 +72,6 @@
   grid-template-rows: auto;
 }
 
-th {
+th.MuiTableCell-head {
   font-weight: bold;
 }

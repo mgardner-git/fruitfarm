@@ -69,7 +69,7 @@ const Account  = () => {
                 <h3>Addresses</h3>
                 <div class = "controls">                                    
                     <div id="add">
-                        <Button onClick={(e) => openDialog({})}><AddIcon></AddIcon>Add Address</Button>
+                        <Button variant = "contained" onClick={(e) => openDialog({})}><AddIcon></AddIcon>Add Address</Button>
                     </div>
                 </div>
                 <TableContainer component = {Paper}  id = "purchasing">

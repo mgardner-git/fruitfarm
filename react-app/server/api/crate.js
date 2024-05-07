@@ -37,34 +37,16 @@ router.delete('/:serialNumber', async function(req,res) {
     res.json("deleted"); 
 });
 
-router.put('/:serialNumber', async function(req, res) {
-    let sql = "update crate set inventoryId = ?, quantityAvailable = ? where serialNumber = ?";
-    const crate = req.body;
-    let serialNumber = req.params.serialNumber;
-    let updateResult = await connection.promise().query(sql, [crate.inventoryId, crate.quantityAvailable,  serialNumber]);
-    res.status(200);
-    res.json("updated");
-});
 
-router.post('/:serialNumber', async function(req, res, next) {
+
+router.post('/', async function(req, res, next) {
     try {
-        //avoid an attempt at a duplicate serial number/primary key
-        let checkSql = "select serialNumber from crate where serialNumber = ?";
-        const crate = req.body;
-        let checkResult = await connection.promise().query(checkSql, [crate.serialNumber]);
-        let num = checkResult[0].length;
-        if (num == 0) {
-        
-            let sql = "insert into  crate (serialNumber, locationId, inventoryId, quantityAvailable) values (?,?,?,?)";
-            
+            let sql = "replace into  crate (serialNumber, locationId, inventoryId, quantityAvailable) values (?,?,?,?)";
+            let crate = req.body;
             let serialNumber = req.params.serialNumber;
             let updateResult = await connection.promise().query(sql, [crate.serialNumber, crate.locationId, crate.inventoryId, crate.quantityAvailable]);
             res.status(200);
-            res.json("created");
-        } else {
-            res.status(400);
-            res.send("The serial number " + crate.serialNumber + " is already being used");
-        }
+            res.json("Completed");
     } catch (err) {
         next(err.message);
     }

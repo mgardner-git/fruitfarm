@@ -153,7 +153,7 @@ const Inventory = () => {
                 <Search onBlur={(e) => setSearch(e.target.value)}/>                
                 {inventory && locationId &&
                     <div id="add">
-                        <AddIcon onClick={(e) => openDialog()}></AddIcon>
+                        <Button variant = "contained"><AddIcon onClick={(e) => openDialog()}></AddIcon>Add Inventory</Button>
                     </div>
                 }
            </div>
@@ -196,7 +196,7 @@ const Inventory = () => {
                                         <MenuItem value = {fruit.id}>{fruit.name}</MenuItem>
                                     ))}
                                 </Select>
-                                <AddIcon onClick = {openAddProduceDialog} />
+                                <Button variant = "contained" onClick = {openAddProduceDialog} ><AddIcon />Add Type</Button>
                             </div>
                         :
                             <span>{item.name}</span>

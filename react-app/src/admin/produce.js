@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import ErrorDialog  from '../components/errorDialog';
 
 import EditIcon from '@mui/icons-material/Edit';
+import { Button } from '@mui/material';
 
 const Produce = () => {
   
@@ -74,7 +75,7 @@ const Produce = () => {
                     <label>Search:</label>            
                     <Search onBlur={(e) => setSearch(e.target.value)}/>                
                     <div id="add">
-                        <AddIcon onClick={(e) => openDialog()}></AddIcon>
+                        <Button variant="contained"><AddIcon onClick={(e) => openDialog()}></AddIcon>Add Produce</Button>
                     </div>
 
                 </div>

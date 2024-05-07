@@ -23,4 +23,15 @@ router.get('/byUser', (req, res) => {
         }
     });
 });
+
+router.post("/", async (req, res) => {
+    let addr = req.body;    
+
+    const sql = `insert into address(id, street1, street2, city,state,zip,userId) values(?, ?,?, ?,?,?,?) 
+        on duplicate key update street1=?, street2=?, city=?, state=?, zip=?`;
+
+    var result = await connection.promise().query(sql, [addr.id,addr.street1, addr.street2, addr.city, addr.state, addr.zip, req.user, addr.street1, addr.street2, addr.city, addr.state, addr.zip]);
+    res.status(200);
+    res.json(result[0].insertId);
+});
 module.exports = router;

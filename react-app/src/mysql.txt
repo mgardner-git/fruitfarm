@@ -77,9 +77,6 @@ create table crate (
     foreign key(inventoryId) references inventory(id) on delete cascade
 );
 
-
-
-
 #fuji apples are on sale for $1 at las vegas
 insert into inventory (price, locationId, produceId) values (1, 1, 1); 
 insert into inventory (price,locationId, produceId) values(1.5, 1, 2);
@@ -153,3 +150,5 @@ create table lineItem (
     foreign key (orderId) references orders(id),
     foreign key (inventoryId) references inventory(id)
 );
+
+

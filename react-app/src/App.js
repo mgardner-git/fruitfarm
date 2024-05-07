@@ -12,6 +12,7 @@ import FulfillOrders from "./admin/fulfillOrders";
 import Inventory from "./admin/inventory";
 import Crates from "./admin/crates";
 import Produce from "./admin/produce";
+import Account from "./account";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {useRef, useState, useEffect} from 'react';
 
@@ -29,7 +30,8 @@ function App() {
             <Routes>              
               <Route path = "purchase" element = {<Purchase/>}></Route>
               <Route path = "cart" element = {<Cart/>}></Route>   
-              <Route path = "myOrders" element = {<MyOrders/>}></Route>           
+              <Route path = "myOrders" element = {<MyOrders/>}></Route>  
+              <Route path = "account" element = {<Account/>}></Route>         
               <Route path = "/" element = {<Purchase />}></Route>
               <Route path = "login" element = {<Login setUser = {setUser} />}></Route>
               <Route path = "register" element = {<Register/>}></Route>       

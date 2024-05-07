@@ -12,6 +12,7 @@ const nav = () => {
         </li>
         <li><ProtectedLink roles="customer" to = "/purchase">Purchase Fruit</ProtectedLink></li>
         <li><ProtectedLink roles="customer" to = "/myOrders">View Previous Orders</ProtectedLink></li>
+        <li><ProtectedLink roles="customer" to = "/account">Account</ProtectedLink></li>
         <li><ProtectedLink roles = "inventoryManager" to = "/approveOrders">Approve Orders</ProtectedLink></li>
         <li><ProtectedLink roles = "inventoryManager" to = "/fulfillOrders">Fulfill Orders</ProtectedLink></li>
         <li><ProtectedLink roles = "inventoryManager" to = "/crates">Manage Crates</ProtectedLink></li>

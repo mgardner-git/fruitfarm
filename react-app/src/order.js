@@ -12,6 +12,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { TableFooter } from '@mui/material';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 
 const Order = () => {
@@ -20,7 +22,7 @@ const Order = () => {
   const [cart, setCart] = useState({
     items: []
   });
-  const [address, setAddress] = useState(null);
+  const [address, setAddress] = useState({});
   const [addresses, setAddresses] = useState([]); 
   const [order, setOrder] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -52,6 +54,13 @@ const Order = () => {
     .catch(function(err) {
       setErrorMessage(err.response.data);
     });
+  }
+
+  function updateAddress(event) {
+    let newAddress = {
+      id: event.target.value
+    };
+    setAddress(newAddress);
   }
   return (
     <ProtectedRoute roles="customer manager">
@@ -86,11 +95,11 @@ const Order = () => {
             </Table>
           </TableContainer>
           <label>Select Address:</label>
-          <select name = "address" value = "address">
+          <Select id = "address" onChange={updateAddress} value = {address.id}>
           {addresses.map((addr) => 
-              <option key = {addr.id} value = {addr.id}>{addr.street1}</option>
+            <MenuItem key = {addr.id} value = {addr.id}> {addr.street1}</MenuItem>             
           )}
-          </select>       
+          </Select>       
          <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
         </>
         }

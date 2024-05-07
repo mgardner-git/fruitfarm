@@ -130,7 +130,7 @@ router.put("/fulfill/:orderId", async function(req, res) {
                 let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
                 totalQuantityReduced += parseInt(crate.quantity);
             } else {
-                errors.push("There is only " + checkResult.quantityAvailable + " of product in crate # " + crate.serialNumber);                        
+                errors.push("There is only " + checkResult[0].quantityAvailable + " of product in crate # " + crate.serialNumber);                        
             }            
         }
         if (totalQuantityReduced != parseInt(item.quantity)) {

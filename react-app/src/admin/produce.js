@@ -42,18 +42,19 @@ const Produce = () => {
         });        
     }
 
+    
     function closeErrorDialog() {
         setErrorMessage(null);
     }
-    function saveProduct() {
-        axios.post("/api/produce/", product).then(function(response) {
-            setProduct(null);
-            loadProduce();
-
-        }).catch(function(err) {
-            setErrorMessage(err.response.data);
-        })
+    function closeErrorDialog(e) {
+        setErrorMessage(null);
     }
+    function saveProduct() {
+        loadProduce();
+        setProduct(null);
+    }
+
+
     function openDialog(inProd) {
         console.log(inProd);
         if (inProd == null) {
@@ -75,7 +76,7 @@ const Produce = () => {
                     <label>Search:</label>            
                     <Search onBlur={(e) => setSearch(e.target.value)}/>                
                     <div id="add">
-                        <Button variant="contained"><AddIcon onClick={(e) => openDialog()}></AddIcon>Add Produce</Button>
+                        <Button variant="contained" onClick={(e) => openDialog(null)}><AddIcon></AddIcon>Add Produce</Button>
                     </div>
 
                 </div>
@@ -98,7 +99,7 @@ const Produce = () => {
                 </TableBody>
                 </Table>
                 </TableContainer>                
-                <ProduceDialog closeProduceDialog={closeProduceDialog} product = {product} saveProduct={saveProduct}/>
+                <ProduceDialog closeProduceDialog={closeProduceDialog} product = {product} onSave={saveProduct}/>
                 <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
             </div>
         </ProtectedRoute>

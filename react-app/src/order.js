@@ -111,7 +111,7 @@ const Order = () => {
             <MenuItem key = {addr.id} value = {addr.id}> {addr.street1}</MenuItem>             
           )}
           </Select>       
-          <AddIcon onClick={(e) => openAddressDialog({})}></AddIcon>   
+          <Button onClick={(e) => openAddressDialog({})}><AddIcon></AddIcon>Add Address</Button>
          <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
         </>
         }

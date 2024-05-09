@@ -78,51 +78,52 @@ const Register = () => {
 
   return (
     <section>
-        <form onSubmit = {handleSubmit}>
-
-            <h1>Register</h1>
-            <section>
-                <label htmlFor="username">Username:</label>
-                <span className={validName ? "valid" :"hide" }>
-                    <FontAwesomeIcon icon = {faCheck} />
-                </span>
-                <span className={validName || !user ? "hide" : "invalid"} >
-                    <FontAwesomeIcon icon = {faTimes}/>
-                </span>
-                <input type="text" id="username"
-                ref = {userRef}
-                autoComplete = "off"
-                onChange = {(e) => setUser(e.target.value)}
-                required
-                aria-invalid={validName ? "false" : "true"}
-                aria-describedby = "uidnote"
-                onFocus = {() => setUserFocus(true)}
-                onBlur = {()=> setUserFocus(false)}
-                />
-            </section>
-            <section>
-                <label htmlFor = "password">Password:
-                    <span className={validPassword ? "valid" :"hide" }>
-                        <FontAwesomeIcon icon = {faCheck} />
-                    </span>
-                    <span className={validPassword || ! password ? "hide" : "invalid"} >
-                        <FontAwesomeIcon icon = {faTimes}/>
-                    </span>
-                </label>
-                
-                <input type="password" id="password" 
+        <h1>Register</h1>
+        <form onSubmit = {handleSubmit} class="gridForm">
+          <label htmlFor="username">Username:
+          <span className={validName ? "valid" :"hide" }>
+              <FontAwesomeIcon icon = {faCheck} />
+          </span>
+          <span className={validName || !user ? "hide" : "invalid"} >
+              <FontAwesomeIcon icon = {faTimes}/>
+          </span>
+          </label>
+          <input type="text" id="username"
+          ref = {userRef}
+          autoComplete = "off"
+          onChange = {(e) => setUser(e.target.value)}
+          required
+          aria-invalid={validName ? "false" : "true"}
+          aria-describedby = "uidnote"
+          onFocus = {() => setUserFocus(true)}
+          onBlur = {()=> setUserFocus(false)}
+          />            
+            
+          <label htmlFor = "password">Password:
+            <span className={validPassword ? "valid" :"hide" }>
+            <FontAwesomeIcon icon = {faCheck} />
+            </span>
+            <span className={validPassword || ! password ? "hide" : "invalid"} >
+                <FontAwesomeIcon icon = {faTimes}/>
+            </span>
+          </label>
+          <input type="password" id="password" 
                 onChange = {(e) => setPassword(e.target.value)}
                 required 
                 aria-invalid={validPassword ? "false" : "true"}
                 aria-describedby="pwdNote"
                 onFocus = {() => setPasswordFocus(true)}
                 onBlur = {() => setPasswordFocus(false)} />
-            </section>
-            <section>
-              <label htmlFor = "email">Email:</label>
-              <input type="email" id = "email" onChange={(e)=>setEmail(e.target.value)}></input>
-            </section>
-            <p id = "uidnote" className = {userFocus && user && !validName ? "instructions" : "offscreen"}>
+            
+          
+          <label htmlFor = "email">Email:</label>
+          <input type="email" id = "email" onChange={(e)=>setEmail(e.target.value)}></input>
+          
+            
+
+            <Button onClick={handleSubmit} variant="contained" disabled = {!validName || !validPassword}>Sign Up</Button>
+        </form>
+        <p id = "uidnote" className = {userFocus && user && !validName ? "instructions" : "offscreen"}>
                 <FontAwesomeIcon icon = {faInfoCircle} />
                 4 to 24 characters. <br />
                 Letters, numbers, underscores, hyphens allowed.            
@@ -130,13 +131,8 @@ const Register = () => {
             <p id = "success" className = {success ? "success":"offscreen"}>
               You have registered as {user}. <br/>
               <Link to="/login">Login</Link>
-            </p>
-            
-
-            <Button onClick={handleSubmit} variant="contained" disabled = {!validName || !validPassword}>Sign Up</Button>
-        </form>
+        </p>
         <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
-
     </section>
   );
 

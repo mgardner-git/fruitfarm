@@ -6,16 +6,17 @@ dotenv.config();
 const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
+const {validate, ValidationError, Joi} = require('express-validation');
 
-    // Create our number formatter.
-    const dollarFormat = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+// Create our number formatter.
+const dollarFormat = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
 
-      // These options are needed to round to whole numbers if that's what you want.
-      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-    }); //TODO: Componentize this
+  // These options are needed to round to whole numbers if that's what you want.
+  //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+  //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+}); //TODO: Componentize this
 
 
 router.use(verifyLoggedIn);
@@ -157,7 +158,18 @@ router.get("/", (req, res) => {
 });
 
 //update the cart with new quantities
-router.put("/", async (req,res) => {
+const cartValidation = {
+  body: Joi.array() .items({
+      id: Joi.optional(),
+      inventoryId: Joi.number().required().messages({"any.required": "You must select a type in inventory."}),
+      quantity: Joi.number().required().min(1).messages({
+        "any.required": "You must enter a quantity",
+        "number.base": "You must enter a numeric quantity",
+        "number.min": "You must select at least 1 of each product"
+      }),
+    })
+  };
+router.put("/", validate(cartValidation, {},{}), async function(req,res,next) {
   const updateCart = req.body;
   const connection = await connect().promise().getConnection();
   await connection.beginTransaction();

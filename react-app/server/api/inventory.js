@@ -8,7 +8,7 @@ const {connect} = require('./connection');
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 const moment = require('moment');
 const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
-
+const {validate, ValidationError, Joi} = require('express-validation');
 router.use(verifyLoggedIn);
 //find all orders awaiting approval at a given location
 router.get('/ordersToApprove/:locationId', async function(req, res) {
@@ -194,7 +194,18 @@ router.get("/byLocation/:locationId/:search?", async function(req,res) {
     res.json(produce);
 });
 
-router.post("/", async function(req,res,next) {
+const invValidation = {
+    body: Joi.object({
+        id: Joi.optional(),
+        produceId: Joi.number().required().messages({"any.required": "You must select a type of produce"}),
+        locationId: Joi.number().required().messages({"any.required": "You must first select a location"}),
+        price: Joi.number().min(0.01).required().messages({
+            "number.min" : "You must enter a positive price",
+            "number.base": "You must enter a valid numeric price"
+        })
+    })
+};
+router.post("/", validate(invValidation, {},{}), async function(req,res,next) {
 
     try {
         const connection = await connect().promise().getConnection();
@@ -203,8 +214,6 @@ router.post("/", async function(req,res,next) {
 
         }
         const sql = "replace into inventory(id, price, locationId, produceId) VALUES (?,?,?,?)";
-        console.log(sql);
-        console.log(req.user);
         let result = await connection.query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
         res.status(200);
         res.json(result);

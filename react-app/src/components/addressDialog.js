@@ -1,11 +1,15 @@
+import {useEffect, useState} from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import ErrorDialog from './errorDialog';
+
 
 const AddressDialog = (props) => {
+    const [errorMessage, setErrorMessage] = useState(null);
 
     function updateAddress() {
         var newAddress = {
@@ -24,14 +28,17 @@ const AddressDialog = (props) => {
             if (props.onSave) {
                 props.onSave();
             }       
+            props.setAddress(null);
         }).catch (function(err) {
-            //not sure what to do here
+            setErrorMessage(err.response.data)
         });
-        props.setAddress(null);
+        
     }
-
+    function closeErrorDialog() {
+        setErrorMessage(null);
+    }
     return (
-
+        <>
         <Dialog open={props.address != null} id = "addressDialog" onClose = "{props.onClose}">
           <DialogTitle>Address</DialogTitle>
           {props.address && 
@@ -56,7 +63,8 @@ const AddressDialog = (props) => {
             <Button variant = "contained" onClick = {saveAddress}>Save</Button>
           </DialogActions>
         </Dialog>
-
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
+        </>
     )
 }
 export default AddressDialog;

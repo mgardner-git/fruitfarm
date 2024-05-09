@@ -6,6 +6,7 @@ dotenv.config();
 const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
+const {validate, ValidationError, Joi} = require('express-validation');
 
 
 router.use(verifyLoggedIn);
@@ -24,7 +25,21 @@ router.get('/byUser', (req, res) => {
     });
 });
 
-router.post("/", async (req, res) => {
+const addressValidation = {
+    body: Joi.object({
+        id: Joi.optional(),
+        street1: Joi.string().required().messages({"any.required": "You must fill out the street1 field."}),
+        street2: Joi.optional(),
+        city: Joi.string().required(),
+        state: Joi.string().min(2).max(2).messages({
+          "string.min": "State must be a 2 letter abbreviation" ,
+          "string.max": "State must be a 2 letter abbreviation"
+        }),
+        zip: Joi.number().required()
+      })
+};
+  
+router.post("/", validate(addressValidation, {},{}), async (req, res) => {
     let addr = req.body;    
 
     const sql = `insert into address(id, street1, street2, city,state,zip,userId) values(?, ?,?, ?,?,?,?) 

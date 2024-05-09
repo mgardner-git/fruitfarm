@@ -99,6 +99,7 @@ const Purchase = () => {
       for (let index=0; index < products.length; index++) {
         let product = products[index];
         if (product.quantity != null && parseInt(product.quantity) > 0) {
+        if (product.quantity != null) {
           cart.push({
             id: product.cartId,
             quantity: product.quantity,
@@ -145,7 +146,7 @@ const Purchase = () => {
                       <TableCell>{product.quantityAvailable}</TableCell>
                       <TableCell>{product.price}</TableCell>
                       <TableCell>
-                        <input type="number" id = {product.id} min="0" value = {product.quantity}
+                        <input type="number" id = {product.id} min="0" value = {product.quantity ? product.quantity : ''}
                           onChange= {(e) => updateQuantity(product.id, e.target.value)}>
                         </input>
                       </TableCell>                     

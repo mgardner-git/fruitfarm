@@ -148,31 +148,28 @@ const FulfillOrders = () => {
             <Table>
               <TableHead>
                 <TableRow>                 
-                  <TableCell>Name</TableCell><TableCell>Price</TableCell><TableCell>Quantity Ordered</TableCell><TableCell>Quantity Available</TableCell>
+                  <TableCell>Id</TableCell><TableCell>Name</TableCell><TableCell>Price</TableCell><TableCell>Quantity Ordered</TableCell><TableCell>Quantity Available</TableCell>
                 </TableRow>
               </TableHead>              
               {order.items.map((item,index) => (
                 <TableBody>
                   <TableRow>
+                      <TableCell>{item.id}</TableCell>
                       <TableCell>{item.name}</TableCell>
                       <TableCell>{item.price}</TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>{item.quantityAvailable}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell colspan="4">
-                    {fulfillItems.map((crateSet) => (
-                       <>
-                        <h3>Carts</h3>
-                        {crateSet.crates.map((crate) => (
+                    <TableCell colspan="4">                    
+                        <h3>Crates</h3>
+                        {fulfillItems[index].crates.map((crate) => (
                           <div>
                             <label>#{crate.serialNumber}</label>&nbsp;
                             <label>Available:</label> {crate.quantityAvailable}<br/>
                             <input type="number" min="0"  onChange={(e) => updateCrate(crate, e.target.value)}/>
                           </div>                          
                         ))}                                             
-                       </>
-                    ))}
                     </TableCell>                    
                   </TableRow>
                 </TableBody>

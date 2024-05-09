@@ -128,7 +128,7 @@ const Inventory = () => {
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{item.price}</TableCell>
                             <TableCell>                                
-                                <EditIcon onClick={(e) => openDialog(item)}></EditIcon>
+                                <Button variant="contained"><EditIcon></EditIcon>Edit</Button>
                             </TableCell>
                         </TableRow>
                     ))}

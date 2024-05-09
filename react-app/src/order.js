@@ -64,7 +64,7 @@ const Order = () => {
   function openAddressDialog() {
     setNewAddress({});
   }
-  function closeDAddressDialog() {
+  function closeAddressDialog() {
     setNewAddress(null);
   }
   function updateAddress(event) {
@@ -113,9 +113,9 @@ const Order = () => {
           </Select>       
           <Button onClick={(e) => openAddressDialog({})}><AddIcon></AddIcon>Add Address</Button>
          <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
-        </>
-        }
-        <AddressDialog onClose = {closeDAddressDialog} setAddress = {setNewAddress} address = {newAddress} onSave={loadAddresses}/>
+      </>
+      }
+        <AddressDialog onClose = {closeAddressDialog} setAddress = {setNewAddress} address = {newAddress} onSave={loadAddresses}/>
 
          {order &&
           <div id ="result">

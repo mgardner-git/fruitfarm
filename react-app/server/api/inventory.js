@@ -5,7 +5,6 @@ const mysql = require('mysql2');
 const dotenv = require('dotenv');
 dotenv.config();
 const {connect} = require('./connection');
-const connection = connect();
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 const moment = require('moment');
 const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
@@ -13,6 +12,7 @@ const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss"
 router.use(verifyLoggedIn);
 //find all orders awaiting approval at a given location
 router.get('/ordersToApprove/:locationId', async function(req, res) {
+
     const locationId = req.params.locationId;
     const orders = await getOrdersAtLocationAndStatus(locationId, 1);
     res.status(200);
@@ -30,6 +30,7 @@ router.get('/ordersToFulfill/:locationId', async function(req, res)  {
 });
 
 async function getOrdersAtLocationAndStatus(locationId, status) {
+    const connection = await connect().promise().getConnection();
     const sql = `
     select O.id as orderId, L.price, L.quantity, I.id as inventoryId, C.quantityAvailable, P.name, S.status from 
     orders O inner join lineItem L on (L.orderId = O.id)
@@ -44,7 +45,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
     where O.locationId=? and S.status=?
   `
   
-    let result = await connection.promise().query(sql, [locationId, status]);
+    let result = await connection.query(sql, [locationId, status]);
     const orders= [];
       
     let order = {
@@ -63,7 +64,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
             order.items.push(lineItem);
             index++;
             if (lineItem.quantity > lineItem.quantityAvailable) {
-                order.isFulfillable =false;
+                order.fulfillable =false;
             }
             lineItem = lineItems[index];
         }
@@ -76,10 +77,11 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
 }
 
 router.put("/approve/:orderId", async function(req,res)  {
+        const connection = await connect().promise().getConnection();
         const orderId = req.params.orderId;
         const statusSql = "insert into order_status (status, orderId, username, time) values (?,?,?,?)";
         var today = moment().format(DATE_FORMAT);
-        let statusResult = await connection.promise().query(statusSql, [2, orderId, req.user, today]);
+        let statusResult = await connection.query(statusSql, [2, orderId, req.user, today]);
         res.status(200);
         res.json({});
 
@@ -87,11 +89,12 @@ router.put("/approve/:orderId", async function(req,res)  {
 
 
 router.put("/fulfill/:orderId", async function(req, res) {
-    await connection.promise().beginTransaction();
+    const connection = await connect().promise().getConnection();
+    await connection.beginTransaction();
     const orderId = req.params.orderId;
     const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format(DATE_FORMAT);
-    let statusResult = await connection.promise().query(statusSql, [3, orderId, req.user, today]);
+    let statusResult = await connection.query(statusSql, [3, orderId, req.user, today]);
             
     /*
         put body structure
@@ -123,11 +126,11 @@ router.put("/fulfill/:orderId", async function(req, res) {
             let crate = item.crates[c];
             //verify sufficient quantity available
             let checkSql = "select serialNumber, quantityAvailable from crate where serialNumber=?";
-            let checkResult = await connection.promise().query(checkSql,[crate.serialNumber]);
+            let checkResult = await connection.query(checkSql,[crate.serialNumber]);
             checkResult = checkResult[0];
             if (checkResult.length == 1 && checkResult[0].quantityAvailable >= parseInt(crate.quantity)) {
                 let reduceSql = "update crate set quantityAvailable = quantityAvailable-? where serialNumber=? and inventoryId=?";
-                let reduceResult = await connection.promise().query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
+                let reduceResult = await connection.query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
                 totalQuantityReduced += parseInt(crate.quantity);
             } else {
                 errors.push("There is only " + checkResult[0].quantityAvailable + " of product in crate # " + crate.serialNumber);                        
@@ -138,22 +141,22 @@ router.put("/fulfill/:orderId", async function(req, res) {
         }
     }
     if (errors.length == 0) {
-        await connection.promise().commit();
+        await connection.commit();
         res.status(200);
         res.send("fulfilled");
      } else {
-        connection.rollback(function(){});
+        await connection.rollback();
         res.status(400);
         res.send(errors);
     }
 });
 
 router.put("/reject/:orderId", async function(req, res) {
-
+    const connection = await connect().promise().getConnection();
     const orderId = req.params.orderId;
     const statusSql = "insert into order_status(status, orderId, username, time) values (?,?,?,?)";
     var today = moment().format(DATE_FORMAT);
-    let statusResult = await connection.promise().query(statusSql, [8,orderId, req.user, today]);
+    let statusResult = await connection.query(statusSql, [8,orderId, req.user, today]);
     res.status(200);
     res.json({});
 });
@@ -161,6 +164,7 @@ router.put("/reject/:orderId", async function(req, res) {
 //get the crates that correspond to each line item in an order.
 //note that some lineItems could be fulfilled by multiple crates in some cases.
 router.get("/crates/:orderId", async function(req,res) {
+    const connection = await connect().promise().getConnection();
     const orderId = req.params.orderId;
     const crateSql = 
     ` select O.id, C.serialNumber, L.inventoryId, C.quantityAvailable from 
@@ -168,13 +172,14 @@ router.get("/crates/:orderId", async function(req,res) {
         inner join crate C on (C.inventoryId = L.inventoryId)
         where O.id = ?
     `
-    const crates = await connection.promise().query(crateSql, [orderId]);
+    const crates = await connection.query(crateSql, [orderId]);
     let result = crates[0];
     res.status(200);
     res.json(result);    
 });
 
 router.get("/byLocation/:locationId/:search?", async function(req,res) {
+    const connection = await connect().promise().getConnection();
     const locationId = req.params.locationId;
     const search = req.params.search;
     const produceSql = `select I.id, I.produceId, P.name, I.price from 
@@ -183,14 +188,16 @@ router.get("/byLocation/:locationId/:search?", async function(req,res) {
         (search ? ` and P.name like ? ` : ``) +
         ` order by P.name ASC`;
     console.log(produceSql);
-    let produce = await connection.promise().query(produceSql, search ? [locationId, '%' + search + '%' ]:[locationId]);
+    let produce = await connection.query(produceSql, search ? [locationId, '%' + search + '%' ]:[locationId]);
     produce = produce[0];
     res.status(200);
     res.json(produce);
 });
 
 router.post("/", async function(req,res,next) {
+
     try {
+        const connection = await connect().promise().getConnection();
         let inv = req.body;
         if (inv.produceId) {
 
@@ -198,7 +205,7 @@ router.post("/", async function(req,res,next) {
         const sql = "replace into inventory(id, price, locationId, produceId) VALUES (?,?,?,?)";
         console.log(sql);
         console.log(req.user);
-        let result = await connection.promise().query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
+        let result = await connection.query(sql, [inv.id, inv.price, inv.locationId, inv.produceId]);
         res.status(200);
         res.json(result);
     } catch (error) {

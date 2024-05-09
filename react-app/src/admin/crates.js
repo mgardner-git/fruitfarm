@@ -161,7 +161,7 @@ const Crates = () => {
                 <Search onBlur={(e) => setSearch(e.target.value)}/>                
                 {inventory && 
                     <div id="add">
-                        <Button variant="contained"> <AddIcon onClick={(e) => openDialogAsCreate()}></AddIcon>Create Crate</Button>
+                        <Button variant="contained" onClick={(e) => openDialogAsCreate()}> <AddIcon></AddIcon>Create Crate</Button>
                     </div>
                 }
            </div>

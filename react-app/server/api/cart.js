@@ -157,50 +157,28 @@ router.get("/", (req, res) => {
 });
 
 //update the cart with new quantities
-router.put("/", (req,res) => {
-  /*
-  [
-   {cartId: 1, inventoryId: 2, QUANTITY: 2 },
-  ]
-  ]
-  */
+router.put("/", async (req,res) => {
   const updateCart = req.body;
-  connection.beginTransaction(function(err) {
-    for (let index=0; index < updateCart.length; index++) {
-      var update = updateCart[index];
+  const connection = await connect().promise().getConnection();
+  await connection.beginTransaction();
+  for (let index=0; index < updateCart.length; index++) {
+    var update = updateCart[index];
       
-      //update
-      const sql = "replace into cart(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
-      console.log(sql);
-      console.log(update);
-      console.log(req.user);
-      if (update.quantity < 0) {
+    //update
+    const sql = "replace into cart(id, inventoryId, quantity, username) VALUES (?,?,?,?)";
+    if (update.quantity < 0) {
         res.status(500);
         res.json("Can't update cart quantity to negative numbers");
         connection.rollback(function() {
-          //connection.release(); //failure
+          connection.release(); //failure
         });
-        return;
-      }
-      connection.query(sql, [update.id, update.inventoryId, update.quantity,req.user], (err,result) => {
-        if (err) {
-            console.log(err);
-            res.status(500);
-            return res.json(null);
-        }
-      });
-    }//end for
-    connection.commit(function(err) {
-      if (err) {
-        res.status(500);
-        return res.json(err);
-      } else {
-        res.status(200);
-        res.json(true);
-      }
-    });
-  });
-  
+        break;
+    }
+    await connection.query(sql, [update.id, update.inventoryId, update.quantity,req.user]);
+  }//end for
+  await connection.commit();
+  res.status(200);
+  res.json(true);
   
 });
 

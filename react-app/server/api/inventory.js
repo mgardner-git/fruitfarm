@@ -33,7 +33,7 @@ router.get('/ordersToFulfill/:locationId', async function(req, res)  {
 async function getOrdersAtLocationAndStatus(locationId, status) {
     const connection = await connect().promise().getConnection();
     const sql = `
-    select O.id as orderId, L.price, L.quantity, I.id as inventoryId, C.quantityAvailable, P.name, S.status from 
+    select O.id as orderId,L.id, L.price, L.quantity, I.id as inventoryId, C.quantityAvailable, P.name, S.status from 
     orders O inner join lineItem L on (L.orderId = O.id)
     inner join inventory I on (I.id = L.inventoryId) 
     inner join produce P on (I.produceId = P.id)
@@ -56,6 +56,7 @@ async function getOrdersAtLocationAndStatus(locationId, status) {
     let lineItems = result[0];
     for (let index=0; index < lineItems.length;) {
         let lineItem = lineItems[index];
+        lineItem.price = dollarFormat.format(lineItem.price);
         order = {
             id: lineItem.orderId,
             items: [],
@@ -131,14 +132,18 @@ router.put("/fulfill/:orderId", async function(req, res) {
             checkResult = checkResult[0];
             if (checkResult.length == 1 && checkResult[0].quantityAvailable >= parseInt(crate.quantity)) {
                 let reduceSql = "update crate set quantityAvailable = quantityAvailable-? where serialNumber=? and inventoryId=?";
-                let reduceResult = await connection.query(reduceSql, [crate.quantity, crate.serialNumber, item.id]);
-                totalQuantityReduced += parseInt(crate.quantity);
+                let reduceResult = await connection.query(reduceSql, [crate.quantity, crate.serialNumber, item.inventoryId]);
+                if (reduceResult[0].affectedRows != 1) {
+                    errors.push("Something went wrong updating crate #" + crate.serialNumber);
+                } else {
+                    totalQuantityReduced += parseInt(crate.quantity);
+                }
             } else {
                 errors.push("There is only " + checkResult[0].quantityAvailable + " of product in crate # " + crate.serialNumber);                        
             }            
         }
         if (totalQuantityReduced != parseInt(item.quantity)) {
-            errors.push("The quantity marked for  lineItem # " + item.id + " doesn't match the sum of quantities in the crates");                    
+            errors.push("The quantity marked for  lineItem # " + item.lineItemId + " doesn't match the sum of quantities in the crates");                    
         }
     }
     if (errors.length == 0) {
@@ -203,6 +208,7 @@ const invValidation = {
         id: Joi.optional(),
         produceId: Joi.number().required().messages({"any.required": "You must select a type of produce"}),
         locationId: Joi.number().required().messages({"any.required": "You must first select a location"}),
+        name: Joi.optional(),
         price: Joi.number().min(0.01).required().messages({
             "number.min" : "You must enter a positive price",
             "number.base": "You must enter a valid numeric price"

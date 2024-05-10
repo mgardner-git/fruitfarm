@@ -120,7 +120,7 @@ const Inventory = () => {
             <TableContainer component = {Paper} id = "crates">
             <Table sx = {{minWidth:650}} >
                 <TableHead>
-                    <TableRow><TableCell>Type</TableCell><TableCell>Price</TableCell><tableCell>Actions</tableCell></TableRow>
+                    <TableRow><TableCell>Type</TableCell><TableCell>Price</TableCell><TableCell>Actions</TableCell></TableRow>
                 </TableHead>
                 <TableBody>
                     {inventory.map((item) => (
@@ -128,7 +128,7 @@ const Inventory = () => {
                             <TableCell>{item.name}</TableCell>
                             <TableCell>{item.price}</TableCell>
                             <TableCell>                                
-                                <Button variant="contained"><EditIcon></EditIcon>Edit</Button>
+                                <Button variant="contained" onClick={(e) => openDialog(item)}><EditIcon></EditIcon>Edit</Button>
                             </TableCell>
                         </TableRow>
                     ))}

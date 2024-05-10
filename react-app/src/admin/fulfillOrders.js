@@ -72,11 +72,13 @@ const FulfillOrders = () => {
       for (let index=0; index < order.items.length; index++) {
         let lineItem = order.items[index];
         let crateSet = {
-          id: lineItem.inventoryId,
+          inventoryId: lineItem.inventoryId,
+          lineItemId: lineItem.id,
           quantity: lineItem.quantity, 
           crates: []
 
         };
+
         //find all crates that carry this item
         for (let c = 0; c < crates.length; c++) {
           const checkCrate = crates[c];
@@ -140,7 +142,7 @@ const FulfillOrders = () => {
             <h3>There are no orders to fulfill</h3>
           )}
 
-        <Dialog open={order != null} id = "approveDialog" onClose={closeDialog}>
+        <Dialog open={order != null} id = "fulfillDialog" onClose={closeDialog}>
           <DialogTitle>Fulfill Order</DialogTitle>
           <DialogContent>
             {order && 

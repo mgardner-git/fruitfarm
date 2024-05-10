@@ -4,6 +4,7 @@ const router = express.Router();
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 dotenv.config();
+const dollarFormat = require('./dollarFormat').dollarFormat;
 const {connect} = require('./connection');
 const {verifyLoggedIn} = require('./verifyLoggedIn');
 const moment = require('moment');
@@ -190,6 +191,9 @@ router.get("/byLocation/:locationId/:search?", async function(req,res) {
     console.log(produceSql);
     let produce = await connection.query(produceSql, search ? [locationId, '%' + search + '%' ]:[locationId]);
     produce = produce[0];
+    for (let index=0; index < produce.length; index++) {
+        produce[index].price = dollarFormat.format(produce[index].price);
+    }
     res.status(200);
     res.json(produce);
 });

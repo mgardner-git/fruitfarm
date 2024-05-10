@@ -121,7 +121,8 @@ const Purchase = () => {
         }
       }  
       axios.put("/api/cart/", cart).then(function(response) {
-          alert("Cart Updated");  //TODO: Toast Library
+          alert("Cart Updated"); 
+          loadProducts();
       }).catch(function(err) {
         setErrorMessage(err.response.data);        
         setMyLocation(myLocation);

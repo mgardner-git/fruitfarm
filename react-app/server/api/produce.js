@@ -6,6 +6,7 @@ dotenv.config();
 const {connect} = require('./connection');
 const connection = connect();
 const {verifyLoggedIn }= require('./verifyLoggedIn');
+const dollarFormat = require('./dollarFormat').dollarFormat;
 
 
 
@@ -76,6 +77,7 @@ router.get("/produceAndCart/:location/:search?", async function(req,res) {
     
     for (let index=0; index < produceResult.length; index++) {
         let checkProduce = produceResult[index];
+        checkProduce.price = dollarFormat.format(checkProduce.price);
         for (let c = 0; c < cartResult.length; c++) {
             let checkCart = cartResult[c];
             if (checkCart.inventoryId == checkProduce.id) {

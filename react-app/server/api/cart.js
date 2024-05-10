@@ -157,6 +157,16 @@ router.get("/", (req, res) => {
 
 });
 
+router.delete("/:id", async function(req,res,next) {
+  const cartId = req.params.id;
+  const connection = await connect().promise().getConnection();
+  const sql = "delete from cart where id=? and username=?";
+  await connection.query(sql, [cartId, req.user]);
+  res.status(200);
+  res.json("deleted");
+
+});
+
 //update the cart with new quantities
 const cartValidation = {
   body: Joi.array() .items({

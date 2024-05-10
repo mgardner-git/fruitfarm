@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import { TableFooter } from '@mui/material';
 import Search from './components/search';
 import Locations from './components/locations';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Purchase = () => {
 
@@ -39,17 +40,19 @@ const Purchase = () => {
   }, []);
 
   useEffect(() => {
-    if (myLocation) {            
-      let url = "/api/produce/produceAndCart/" + myLocation + (search == null ? '': "/" + search);
-      axios.get(url).then(function(response) {          
-            setProducts(response.data);          
-      }).catch(function(err) {
-        setErrorMessage(err.response.data);
-      });
+    if (myLocation) {
+      loadProducts();
     }
   }, [myLocation, search]);
 
-
+  function loadProducts() {
+    let url = "/api/produce/produceAndCart/" + myLocation + (search == null ? '': "/" + search);
+    axios.get(url).then(function(response) {          
+          setProducts(response.data);          
+    }).catch(function(err) {
+      setErrorMessage(err.response.data);
+    });
+  }
 
   function enforceMaxQuantity() {
 
@@ -89,6 +92,15 @@ const Purchase = () => {
     setErrorMessage(null);
   }
 
+  function deleteCartItem(inventoryItem) {
+
+    axios.delete("/api/cart/"+ inventoryItem.cartId).then(function(response) {
+      loadProducts();
+    }).catch(function(err) {
+      setErrorMessage(err.response.data);
+    });
+  }
+
   //occurs only when they click update cart
   function updateCart(e) {    
     e.preventDefault();
@@ -98,8 +110,7 @@ const Purchase = () => {
       let cart = [];
       for (let index=0; index < products.length; index++) {
         let product = products[index];
-        if (product.quantity != null && parseInt(product.quantity) > 0) {
-        if (product.quantity != null) {
+        if (product.quantity != null && parseInt(product.quantity) > 0) {      
           cart.push({
             id: product.cartId,
             quantity: product.quantity,
@@ -115,6 +126,7 @@ const Purchase = () => {
         setErrorMessage(err.response.data);        
         setMyLocation(myLocation);
       });
+      
     } else {
       setErrorMessage("You have cart errors.");
     }
@@ -136,7 +148,9 @@ const Purchase = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                     <TableCell>Name</TableCell><TableCell>Qty. Available</TableCell><TableCell>Price</TableCell><TableCell>Purchase Quantity</TableCell><TableCell width = "190"></TableCell>
+                     <TableCell>Name</TableCell><TableCell>Qty. Available</TableCell><TableCell>Price</TableCell><TableCell>Purchase Quantity</TableCell>
+                     <TableCell>Actions</TableCell>
+                     <TableCell width = "190"></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -149,7 +163,12 @@ const Purchase = () => {
                         <input type="number" id = {product.id} min="0" value = {product.quantity ? product.quantity : ''}
                           onChange= {(e) => updateQuantity(product.id, e.target.value)}>
                         </input>
-                      </TableCell>                     
+                      </TableCell>
+                      <TableCell>
+                        {product.cartId && 
+                          <Button variant="contained" onClick={(e) => deleteCartItem(product)}><DeleteIcon></DeleteIcon>Delete</Button>
+                        }
+                      </TableCell>
                       <TableCell>
                         {errors[index]}
                       </TableCell>                     

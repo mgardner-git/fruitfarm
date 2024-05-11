@@ -98,7 +98,7 @@ const InventoryDialog = (props) => {
                     <span>{props.item.name}</span>
                 }
                 <label>Price:</label>               
-                <input type = "number" value = {props.item.price.slice(1)} step = ".01" onChange={(e) => updatePrice(e.target.value)} />
+                <input type = "number" value = {props.item.price ? props.item.price.slice(1):0} step = ".01" onChange={(e) => updatePrice(e.target.value)} />
             </div>
         </DialogContent>
         }

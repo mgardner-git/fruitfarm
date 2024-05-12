@@ -64,7 +64,7 @@ export default function Login(props) {
                     <p ref={errRef} className = {errorMessage ? "error":"ofscreen"} aria-live="assertive">
                         {errorMessage}
                     </p>
-                    <h1>Sign In</h1>
+                    <h2>Sign In</h2>
                     <form >
                         <section>
                         <label htmlFor = "username">Username:</label>

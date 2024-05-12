@@ -66,7 +66,7 @@ const Account  = () => {
     return (
         <ProtectedRoute roles="customer manager">
             <div className = "container">
-                <h3>Addresses</h3>
+                <h2>Addresses</h2>
                 <div class = "controls">                                    
                     <div id="add">
                         <Button variant = "contained" onClick={(e) => openDialog({})}><AddIcon></AddIcon>Add Address</Button>

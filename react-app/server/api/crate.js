@@ -50,7 +50,9 @@ const crateValidation = {
         }),
         locationId: Joi.number().required().messages({
             "number.required": "You must select a location first"
-        })
+        }),
+        quantityAvailable: Joi.number().required(),
+        name: Joi.string().optional()
     })
 };
 router.post('/', validate(crateValidation, {},{}), async function(req, res, next) {

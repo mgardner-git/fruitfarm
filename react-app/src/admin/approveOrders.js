@@ -90,7 +90,7 @@ const ApproveOrders = () => {
 
   return (
     <ProtectedRoute roles="inventoryManager">
-        <h1>Approve Orders</h1>
+        <h2>Approve Orders</h2>
         <div class = "controls"> 
           <label htmlFor="locations">Locations:</label>
           <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>

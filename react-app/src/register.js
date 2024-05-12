@@ -6,8 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Link} from 'react-router-dom';
 import ErrorDialog  from './components/errorDialog';
 import { Button } from "@mui/material";
+import ErrorDialog  from './components/errorDialog';
 
-const USER_REGEX = /^[a-zA-z][a-zA-Z0-9-_]{4,16}$/
+
+const USER_REGEX = /^[a-zA-Z0-9-_]{4,16}$/
 const PWD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{4,16}$/;;
 
 
@@ -49,7 +51,7 @@ const Register = () => {
  
   }, [user, password, matchPassword])
 
-  const handleSubmit = async (e) => {
+  const doRegister =  async (e) => {
     e.preventDefault();
     const check1 = USER_REGEX.test(user);
     const check2 = PWD_REGEX.test(password);
@@ -63,10 +65,9 @@ const Register = () => {
         email: email
       }
       Axios.post("/api/users/register",  postBody).then(function(response) {
-           setSuccess(true);
-          
-          
+           setSuccess(true);          
       }).catch(function(err) {
+        setSuccess(false);
         setErrorMessage(err.response.data);
       });
     }
@@ -79,7 +80,7 @@ const Register = () => {
   return (
     <section>
         <h1>Register</h1>
-        <form onSubmit = {handleSubmit} class="gridForm">
+        <form  class="gridForm">
           <label htmlFor="username">Username:
           <span className={validName ? "valid" :"hide" }>
               <FontAwesomeIcon icon = {faCheck} />
@@ -96,8 +97,7 @@ const Register = () => {
           aria-invalid={validName ? "false" : "true"}
           aria-describedby = "uidnote"
           onFocus = {() => setUserFocus(true)}
-          onBlur = {()=> setUserFocus(false)}
-          />            
+          onBlur = {()=> setUserFocus(false)}/>            
             
           <label htmlFor = "password">Password:
             <span className={validPassword ? "valid" :"hide" }>
@@ -113,25 +113,24 @@ const Register = () => {
                 aria-invalid={validPassword ? "false" : "true"}
                 aria-describedby="pwdNote"
                 onFocus = {() => setPasswordFocus(true)}
-                onBlur = {() => setPasswordFocus(false)} />
-            
-          
+                onBlur = {() => setPasswordFocus(false)} />           
           <label htmlFor = "email">Email:</label>
           <input type="email" id = "email" onChange={(e)=>setEmail(e.target.value)}></input>
-          
-            
-
-            <Button onClick={handleSubmit} variant="contained" disabled = {!validName || !validPassword}>Sign Up</Button>
+          <Button onClick={doRegister} variant="contained" disabled = {!validName || !validPassword}>Sign Up</Button>
         </form>
-        <p id = "uidnote" className = {userFocus && user && !validName ? "instructions" : "offscreen"}>
-                <FontAwesomeIcon icon = {faInfoCircle} />
-                4 to 24 characters. <br />
-                Letters, numbers, underscores, hyphens allowed.            
-            </p>
-            <p id = "success" className = {success ? "success":"offscreen"}>
-              You have registered as {user}. <br/>
-              <Link to="/login">Login</Link>
-        </p>
+        {userFocus && user && !validName &&
+          <p id = "uidnote" class="instructions">
+                  <FontAwesomeIcon icon = {faInfoCircle} />
+                  4 to 24 characters. <br />
+                  Letters, numbers, underscores, hyphens allowed.            
+          </p>
+        }
+        {success && 
+          <p id = "success" class = "success" >
+                You have registered as {user}. <br/>
+                <Link to="/login">Login</Link>
+          </p>
+        }
         <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
     </section>
   );

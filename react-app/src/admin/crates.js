@@ -22,6 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Locations from '../components/locations';
+import InventoryDialog from '../components/inventoryDialog';
 
 
 const Crates = () => {
@@ -34,6 +35,7 @@ const Crates = () => {
     const [crate, setCrate] = useState(null); 
     const [editMode, setEditMode] = useState(null); //edit or add
     const [search, setSearch] = useState(null);
+    const [item, setItem] = useState(null); //used in the create inventory dialog
     
     useEffect(() => {
         loadCrates();
@@ -41,12 +43,15 @@ const Crates = () => {
 
     useEffect(() => {
         if (locationId) {
-            axios.get("/api/inventory/byLocation/" + locationId).then(function(response) {
-                setInventory(response.data);
-            });
+            loadInventory();
         }
     }, [locationId]);
 
+    function loadInventory() {
+        axios.get("/api/inventory/byLocation/" + locationId).then(function(response) {
+            setInventory(response.data);
+        });
+    }
     function loadCrates() {
         let url = "/api/crates/" + locationId + (search == null ? '' : "/" + search);
         axios.get(url).then(function(response) {
@@ -150,10 +155,23 @@ const Crates = () => {
       function closeErrorDialog(e) {      
         setErrorMessage(null);
       }
+
+      function saveInventory() {
+        loadInventory();
+      }
+      function openInventoryDialog() {
+        setItem({
+            locationId: locationId,
+            price: 0
+        })
+      }
+      function closeInventoryDialog() {
+        setItem(null);
+      }
       return (
         <ProtectedRoute roles="inventoryManager">
         <div id = "manageCrates">
-            <h3>Crates</h3>
+            <h2>Crates</h2>
             <div class = "controls">                
                 <label htmlFor="locations">Locations:</label>
                 <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>    
@@ -198,11 +216,14 @@ const Crates = () => {
                                 <input type="text" value = {crate.serialNumber} onChange = {(e) => updateCrateSerialNumber(crate, e.target.value)}/>
                             }
                             <label> Type:</label>
+                            <div>
                             <Select onChange = {(e) => updateCrateType(crate, e.target.value)} label = "produce type" value = {crate.inventoryId}>
                                 {inventory.map((inv) => (
                                     <MenuItem value = {inv.id}>{inv.name}</MenuItem>
                                 ))}
                             </Select>
+                            <Button variant="contained" onClick={openInventoryDialog}><AddIcon></AddIcon>Add Inventory</Button>
+                            </div>
                             <label>Quantity:</label>
                             <input type = "number" value = {crate.quantityAvailable} onChange = {(e) => updateCrateQuantity(crate, e.target.value)}></input>
                         </div>
@@ -213,6 +234,8 @@ const Crates = () => {
                     <Button variant = "contained" onClick = {closeDialog} >Close</Button>
                 </DialogActions>
             </Dialog>
+            <InventoryDialog onSave={saveInventory} item={item} locationId={locationId} closeDialog={closeInventoryDialog}/>
+
             <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
 
         </div>

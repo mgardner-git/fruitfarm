@@ -110,7 +110,7 @@ const FulfillOrders = () => {
 
   return (
     <ProtectedRoute roles="inventoryManager">
-        <h1>Fulfill Orders</h1>
+        <h2>Fulfill Orders</h2>
         <div class = "controls"> 
           <label htmlFor="locations">Locations:</label>
           <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>

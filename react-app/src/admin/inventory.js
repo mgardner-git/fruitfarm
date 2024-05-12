@@ -105,7 +105,7 @@ const Inventory = () => {
       return (
         <ProtectedRoute roles="inventoryManager">
         <div id = "manageInventory">
-            <h3>Inventory</h3>
+            <h2>Inventory</h2>
             <div class = "controls">                
                 <label htmlFor="locations">Locations:</label>
                 <Locations onChange = {(e) => setLocationId(e.target.value)}></Locations>    

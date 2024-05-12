@@ -71,7 +71,7 @@ const Produce = () => {
     return (
         <ProtectedRoute roles="inventoryManager">
             <div id = "manageProduce">
-                <h3>Produce</h3>
+                <h2>Produce</h2>
                 <div class = "controls">                                    
                     <label>Search:</label>            
                     <Search onBlur={(e) => setSearch(e.target.value)}/>                

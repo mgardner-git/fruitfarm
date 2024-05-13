@@ -16,16 +16,31 @@ import { TableFooter } from '@mui/material';
 import Search from './components/search';
 import Locations from './components/locations';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useSearchParams} from 'react-router-dom';
+
 
 const Purchase = () => {
-
+  const [searchParams] = useSearchParams();
   const [myLocation, setMyLocation] = useState(null); //location Id
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState([]);  //error per product, for odering more then available
   const [search, setSearch] = useState(null);
   
+//navigate("/purchase?location=" + item.locationId + "&search=" + item.name); 
+  
 
+  useEffect(() => {
+    const paramLoc  = searchParams.get("location");
+    const paramSearch = searchParams.get("search");
+    if (paramLoc) {
+      setMyLocation(paramLoc);
+    }
+    if (paramSearch) {
+      setSearch(paramSearch);
+    }
+
+  },[])
   useEffect(() => {
     if (myLocation) {
       loadProducts();

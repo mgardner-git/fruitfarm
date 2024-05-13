@@ -42,7 +42,7 @@ router.get("/all/:locationId", async function(req, res) {
     res.json(result);
 });
 
-//returns all produce, matching search if given
+//returns all products, matching search if given
 router.get("/search/:search?", async function(req, res) {
 
     let search =req.params.search;

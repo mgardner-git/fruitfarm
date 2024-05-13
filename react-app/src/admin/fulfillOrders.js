@@ -26,9 +26,6 @@ const FulfillOrders = () => {
   const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
  
   const [fulfillItems, setFulfillItems] = useState([]); //the put body sent to fulfill 1 order
- 
-
-
 
   useEffect(() => {
     if (locationId) {
@@ -42,6 +39,7 @@ const FulfillOrders = () => {
         setOrder(null);
     });
   }
+
   function fulfillOrder(e, order) {
     e.preventDefault();
     console.log("fulfilling " + order.id);
@@ -60,6 +58,7 @@ const FulfillOrders = () => {
   function updateCrate( crate, quantity) {
     crate.quantity = quantity;
   }
+
   function openFulfillDialog(e, order) {
     axios.get("/api/inventory/crates/" + order.id).then(function(response) {
       let crates  = response.data;

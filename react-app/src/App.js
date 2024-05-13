@@ -13,6 +13,8 @@ import Inventory from "./admin/inventory";
 import Crates from "./admin/crates";
 import Produce from "./admin/produce";
 import Account from "./account";
+import SearchProducts from "./searchProducts";
+import Product from "./product";
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import {useState} from 'react';
 
@@ -41,6 +43,8 @@ function App() {
               <Route path = "crates" element = {<Crates/>}></Route>
               <Route path = "inventory" element = {<Inventory/>}></Route>
               <Route path = "produce" element = {<Produce/>}> </Route>
+              <Route path = "searchProducts" element = {<SearchProducts/>}></Route>
+              <Route path = "product" element = {<Product/>}></Route>
             </Routes>          
           </div>
         </BrowserRouter> 

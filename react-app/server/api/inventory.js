@@ -203,6 +203,29 @@ router.get("/byLocation/:locationId/:search?", async function(req,res) {
     res.json(produce);
 });
 
+router.get("/byProduct/:productId/", async function(req,res) {
+    const connection = await connect().promise().getConnection();
+    const productId = req.params.productId;
+    
+    const produceSql = 
+    `select P.name, I.id, I.price, I.locationId, L.name as locationName, SUM(C.quantityAvailable) as quantityAvailable  from 
+        produce P inner join inventory I on (P.id = I.produceId)
+        inner join location L on (I.locationid = L.id)
+        inner join crate C on (I.id = C.inventoryId)
+        where P.id = ?
+        group by I.id
+        order by P.name ASC`;
+
+    console.log(produceSql);
+    let produce = await connection.query(produceSql, [productId]);
+    produce = produce[0];
+    for (let index=0; index < produce.length; index++) {
+        produce[index].price = dollarFormat.format(produce[index].price);
+    }
+    res.status(200);
+    res.json(produce);
+});
+
 const invValidation = {
     body: Joi.object({
         id: Joi.optional(),

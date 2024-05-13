@@ -20,24 +20,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const Purchase = () => {
 
   const [myLocation, setMyLocation] = useState(null); //location Id
-  //TODO: Store users favorite loc perm
-  const [locations, setLocations] = useState([]);
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [errors, setErrors] = useState([]);  //error per product, for odering more then available
   const [search, setSearch] = useState(null);
   
-  useEffect(() => {
-    axios.get("/api/locations/").then(function(response) {
-      
-      console.log(response.data);
-      if (response.status === 200){
-        setLocations(response.data);
-      } else {
-        setErrorMessage(JSON.stringify(response));        
-      }
-    });
-  }, []);
 
   useEffect(() => {
     if (myLocation) {

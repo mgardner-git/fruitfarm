@@ -40,26 +40,8 @@ const Account  = () => {
     function closeDialog() {
         setAddress(null);
     }
-    function saveAddress() {
-        axios.post("/api/address/", address).then(function(response) {
-            setAddress(null);
-            loadAddresses();
-        }).catch (function(err) {
-            setErrorMessage(err.response.data);
-        });
-        setAddress(null);
-    }
-    function updateAddress() {
-        var newAddress = {
-            ...address,
-            street1 : document.getElementById("street1").value,
-            street2 : document.getElementById("street2").value,
-            city :document.getElementById("city").value,
-            state :document.getElementById("state").value,
-            zip : document.getElementById("zip").value
-        }
-        setAddress(newAddress);
-    }
+
+
     function closeErrorDialog() {
         setErrorMessage(null);
     }

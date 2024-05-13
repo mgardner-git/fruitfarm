@@ -14,7 +14,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TableFooter } from '@mui/material';
 import Button from '@mui/material/Button';
 import Locations from '../components/locations';
 
@@ -25,14 +24,10 @@ const FulfillOrders = () => {
   const [errorMessage, setErrorMessage] = useState(null); 
   const [orders, setOrders] = useState([]);
   const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
-  const [locations, setLocations] = useState([]);
+ 
   const [fulfillItems, setFulfillItems] = useState([]); //the put body sent to fulfill 1 order
  
-  useEffect(() => {
-    axios.get("/api/locations").then(function(response) {
-        setLocations(response.data);
-    });
-  }, []);
+
 
 
   useEffect(() => {
@@ -82,7 +77,7 @@ const FulfillOrders = () => {
         //find all crates that carry this item
         for (let c = 0; c < crates.length; c++) {
           const checkCrate = crates[c];
-          if (checkCrate.inventoryId == lineItem.inventoryId) {
+          if (checkCrate.inventoryId === parseInt(lineItem.inventoryId)) {
               crateSet.crates.push({
                 serialNumber: checkCrate.serialNumber, 
                 quantity: 0,

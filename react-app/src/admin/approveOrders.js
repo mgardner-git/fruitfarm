@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../components/protectedRoute';
-import {useNavigate, useSearchParams} from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -15,27 +14,19 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { TableFooter } from '@mui/material';
 import Locations from '../components/locations';
 import ErrorDialog  from '../components/errorDialog';
 
 
-const ApproveOrders = () => {
-  const navigate = useNavigate();  
+const ApproveOrders = () => {  
   const [locationId, setLocationId] = useState(null);  
   const [orders, setOrders] = useState([]);
-  const [locations, setLocations] = useState([]);
+  
   const [order, setOrder] = useState(null); //selected order when you open the fulfill Dialog
   const [errorMessage, setErrorMessage] = useState(null); 
 
     
-  useEffect(() => {
-    axios.get("/api/locations").then(function(response) {
-        setLocations(response.data);
-    });
-  }, []);
-
-
+  
   useEffect(() => {
     if (locationId) {
         loadOrders();

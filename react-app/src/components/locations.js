@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import FormControl from '@mui/material/FormControl';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
 const Locations = (props) => {

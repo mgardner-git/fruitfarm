@@ -11,19 +11,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { TableFooter } from '@mui/material';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import { Select, TableFooter } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import AddIcon from '@mui/icons-material/Add';
 import AddressDialog from './components/addressDialog';
+import ErrorDialog from './components/errorDialog';
 
 const Order = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const locationId = searchParams.get("locationId");
   const [cart, setCart] = useState({
     items: []
   });
-  const [address, setAddress] = useState({}); //the selected address
+  const [addressId, setAddressId] = useState({}); //the selected address
   const [newAddress, setNewAddress] = useState(null);
   const [addresses, setAddresses] = useState([]); 
   const [order, setOrder] = useState(null);
@@ -40,19 +40,19 @@ const Order = () => {
     });
     loadAddresses();
 
-  },[]);
+  },[locationId]);
 
   function loadAddresses() {
     axios.get("/api/address/byUser").then(function(response) {
       setAddresses(response.data);
-      setAddress(response.data[0]);
+      setAddressId(response.data[0].id);
       setNewAddress(null);
     });
 
   }
   function sendOrder(event){
     event.preventDefault();
-    axios.post("/api/order/" + locationId,{address: address.id}).then(function(response) {
+    axios.post("/api/order/" + locationId,{address: addressId}).then(function(response) {
       console.log(response.data);
       setOrder(response.data);
     })
@@ -67,11 +67,12 @@ const Order = () => {
   function closeAddressDialog() {
     setNewAddress(null);
   }
+  function closeErrorDialog(e) {   
+    setErrorMessage(null);
+  }
   function updateAddress(event) {
-    let newAddress = {
-      id: event.target.value
-    };
-    setAddress(newAddress);
+    
+    setAddressId(event.target.value);
   }
   return (
     <ProtectedRoute roles="customer manager">
@@ -106,7 +107,8 @@ const Order = () => {
             </Table>
           </TableContainer>
           <label>Select Address:</label>
-          <Select id = "address" onChange={updateAddress} value = {address.id}>
+          {addressId.id}
+          <Select id = "address" onChange={updateAddress} value = {addressId}>
           {addresses.map((addr) => 
             <MenuItem key = {addr.id} value = {addr.id}> {addr.street1}</MenuItem>             
           )}
@@ -115,17 +117,19 @@ const Order = () => {
          <Button variant="contained" onClick={sendOrder}>Finalize Order</Button>
       </>
       }
-        <AddressDialog onClose = {closeAddressDialog} setAddress = {setNewAddress} address = {newAddress} onSave={loadAddresses}/>
+      <AddressDialog onClose = {closeAddressDialog} setAddress = {setNewAddress} address = {newAddress} onSave={loadAddresses}/>
 
-         {order &&
-          <div id ="result">
-              <h2>Orders</h2>
-                <ul class="order">            
-                    <li>Your order has been registered. Your order number is {order.id} </li>
-                    <li>You will receive an email when the order has been approved by inventory management.</li>
-                </ul>            
-          </div>
-         }
+        {order &&
+        <div id ="result">
+            <h2>Orders</h2>
+              <ul class="order">            
+                  <li>Your order has been registered. Your order number is {order.id} </li>
+                  <li>You will receive an email when the order has been approved by inventory management.</li>
+              </ul>            
+        </div>
+        }
+        <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
+
     </ProtectedRoute>
   );
 }

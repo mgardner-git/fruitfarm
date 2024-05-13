@@ -2,10 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { ProtectedRoute  } from '../components/protectedRoute';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
+
 import ErrorDialog  from '../components/errorDialog';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -19,34 +16,24 @@ import Locations from '../components/locations';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Search from '../components/search';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import InventoryDialog from '../components/inventoryDialog';
 
 
 const Inventory = () => {
   
     const [locationId, setLocationId] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(null); 
-    const [locations, setLocations] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(null);    
     const [inventory, setInventory] = useState([]); //used in the edit dialog   
     const [item, setItem] = useState(null); //the item to create or edit
     const [search, setSearch] = useState(null);
-    const [produce, setProduce] = useState([]);
-    const [product, setProduct] = useState(null); //used for adding a new produce entry
 
+    
     useEffect(() => {
         loadInventory();
     }, [locationId, search]);
 
 
-    function loadProduce() {
-        axios.get("/api/produce/all/" + locationId).then(function(response) {
-            setProduce(response.data);
-        }).catch(function(err) {
-            setErrorMessage(err.response.data);
-        });
-    }
+
    function loadInventory() {
         if (locationId) {
             var url = "/api/inventory/byLocation/" + locationId +  (search != null ? ("/" + search) : "");
@@ -91,13 +78,7 @@ const Inventory = () => {
         e.preventDefault();
         setErrorMessage(null);
     }
-    function updatePrice(price) {
-        let newItem = {
-            ...item,
-            price: price
-        };
-        setItem(newItem);
-    }
+
 
 
 

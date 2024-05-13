@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {Link} from 'react-router-dom';
 import ErrorDialog  from './components/errorDialog';
 import { Button } from "@mui/material";
-import ErrorDialog  from './components/errorDialog';
 
 
 const USER_REGEX = /^[a-zA-Z0-9-_]{4,16}$/
@@ -14,8 +13,7 @@ const PWD_REGEX = /^[a-zA-Z0-9!@#$%^&*]{4,16}$/;;
 
 
 const Register = () => {
-  const userRef = useRef();
-  const errorRef = useRef();
+  const userRef = useRef();  
   const [user, setUser] = useState('');
   const [validName, setValidName] = useState(false);
   const [userFocus, setUserFocus] = useState(false);
@@ -28,7 +26,7 @@ const Register = () => {
 
   const [matchPassword, setMatchPassword] = useState('');
   const [validMatch, setValidMatch] = useState(false);
-  const [matchFocus, setMatchFocus] = useState(false);
+  
 
   const [errorMessage, setErrorMessage] = useState(null);
   const [success, setSuccess] = useState(false);

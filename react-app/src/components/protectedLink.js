@@ -1,4 +1,3 @@
-import { Navigate} from 'react-router-dom';
 import {Link} from 'react-router-dom';
 
 export const ProtectedLink = (props) => {

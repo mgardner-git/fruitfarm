@@ -3,9 +3,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Button from '@mui/material/Button';
-import {useEffect, useState} from 'react';
 import axios from 'axios';
 import ErrorDialog from './errorDialog';
+import {useState} from 'react';
 
 const ProduceDialog = (props) => {
     const [count, setCount] = useState(0);

@@ -42,10 +42,6 @@ const Produce = () => {
         });        
     }
 
-    
-    function closeErrorDialog() {
-        setErrorMessage(null);
-    }
     function closeErrorDialog(e) {
         setErrorMessage(null);
     }

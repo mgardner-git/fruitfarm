@@ -19,7 +19,7 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
-import Select, {SelectChangeEvent} from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Locations from '../components/locations';
 import InventoryDialog from '../components/inventoryDialog';
@@ -29,7 +29,6 @@ const Crates = () => {
   
     const [locationId, setLocationId] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null); 
-    const [locations, setLocations] = useState([]);
     const [inventory, setInventory] = useState(null); 
     const [crates, setCrates] = useState([]);
     const [crate, setCrate] = useState(null); 
@@ -59,20 +58,6 @@ const Crates = () => {
         });
     }
 
-    useEffect(() => {
-        axios.get("/api/locations/").then(function(response) {
-          
-          console.log(response.data);
-          setLocations(response.data);
-        }).catch(function(err) {
-            setErrorMessage(err.response.data);
-        });
-    }, []);
-      
-    function closeErrorDialog(e) {
-      e.preventDefault();
-      setErrorMessage(null);
-    }
 
     function closeDialog(e) {
         e.preventDefault();
@@ -116,9 +101,6 @@ const Crates = () => {
         setEditMode(true);
         openDialog(inCrate)
     }
-    function closeDialog() {
-        setCrate(null);
-    }
 
     function updateCrateSerialNumber(inCrate, serialNumber) {
         let newAdd = {
@@ -131,7 +113,7 @@ const Crates = () => {
     function updateCrateType(inCrate, inventoryId) {
         let name = null;
         for (let index=0; index < inventory.length; index++) {
-            if (inventory[index].id == inventoryId) {            
+            if (inventory[index].id === parseInt(inventoryId)) {
                 name = inventory[index].name;
             }
         }

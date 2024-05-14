@@ -13,8 +13,6 @@ const dollarFormat = require('./dollarFormat').dollarFormat;
 router.use(verifyLoggedIn);
 
 router.get('/', async function(req, res) {  
-
-    
     const sql = "select I.id, P.name, sum(C.quantityAvailable) as quantityAvailable, I.price from inventory I  inner join produce P  on I.produceId = P.id inner join crate C on (I.id=C.inventoryId) where I.locationId=? group by inventoryId";
     const locationId = req.query.location;
     console.log(sql);
@@ -29,6 +27,20 @@ router.get('/', async function(req, res) {
     });
 });
 
+router.get("/:productId", async function(req, res) {
+    const id = req.params.productId;
+    const sql = "select id, name, description from produce where id =?";
+    let results = await connection.promise().query(sql, [id]);
+    results = results[0];
+    res.status(200);
+    if (results.length == 1) {
+        res.json(results[0]);
+    }else {
+        res.status(500);
+        res.send("invalid id");
+    }
+});
+   
 //returns all produce that are not already marked as inventory items in the given location
 //(these can be used co create new inventory items)
 router.get("/all/:locationId", async function(req, res) {

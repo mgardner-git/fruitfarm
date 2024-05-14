@@ -19,7 +19,7 @@ const Product = () => {
   const [searchParams] = useSearchParams();
   const productId = searchParams.get("id");
   const [product, setProduct] = useState({});
-  const [inventory, setInventory] = useState([]); //locations and prices where that product it sold at
+  const [inventory, setInventory] = useState([]); //locations and prices where that product is sold at
   const [errorMessage, setErrorMessage] = useState(null);  
   const navigate = useNavigate();
   
@@ -29,6 +29,11 @@ const Product = () => {
     loadInventory();
   }, []);
 
+  useEffect(() => {
+    axios.get("/api/produce/" + productId).then(function(response) {
+        setProduct(response.data);
+    });
+  },[])
   function loadInventory() {
         let url = "/api/inventory/byProduct/" + productId; 
         axios.get(url).then(function(response) {          
@@ -69,10 +74,9 @@ const Product = () => {
         </Table>
         </TableContainer>
         ): (
-        <h3>There are no matching inventory</h3>
+        <h3>That product is not available</h3>
         )}
         <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
-
     </div>
   )
 }

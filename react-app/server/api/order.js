@@ -137,4 +137,29 @@ async function createOrder(order) {
     
     return createdOrder;
 }
+
+router.get("/history/:orderId", async function(req, res, next) {
+    const sql = 
+    `
+    select O.id, O.userId, O.locationId, UNIX_TIMESTAMP(S.time)*1000 as time, S.username as auth , 
+    case 
+      when S.status=1 then "Awating Approval"
+      when S.status=2 then "Invoice Sent"
+      when S.status=3 then "Order Paid, Awaiting Fulfillment"
+      when S.status=4 then "In Fulfillment"
+      when S.status=5 then "Shipped"
+      when S.status=6 then "Received"
+      when S.status=7 then "Closed"
+      when S.status=8 then "Rejected"
+   end as status  
+   from orders O inner join order_status S on (O.id=S.orderId)
+   where O.id=?`
+   const orderId = req.params.orderId;
+   let results = await connection.promise().query(sql,[orderId]);
+   results = results[0];
+   res.status(200);
+   res.json(results);
+});
+   
+   
 module.exports = router;

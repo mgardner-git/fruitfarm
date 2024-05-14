@@ -143,8 +143,8 @@ const Purchase = () => {
 
            <div class = "controls"> 
               <label htmlFor="locations">Locations:</label>
-              <Locations onChange = {(e) => setMyLocation(e.target.value)}></Locations>
-              <Search onBlur={(e) => setSearch(e.target.value)}/>
+              <Locations value = {myLocation} onChange = {(e) => setMyLocation(e.target.value)}></Locations>
+              <Search value={search} onBlur={(e) => setSearch(e.target.value)}/>
            </div>      
            {myLocation &&     
             <TableContainer component = {Paper}  id = "purchasing">

@@ -59,7 +59,7 @@ const Product = () => {
         <Table>
             <TableHead>
                 <TableRow>   
-                <TableCell>Location</TableCell><TableCell>Price</TableCell><TableCell>Actions</TableCell>
+                <TableCell>Location</TableCell><TableCell>Price</TableCell><TableCell>Quantity Available</TableCell><TableCell>Actions</TableCell>
                 </TableRow>
             </TableHead>                     
             {inventory.map((item) => (
@@ -67,6 +67,7 @@ const Product = () => {
                 <TableRow>
                     <TableCell>{item.locationName}</TableCell>
                     <TableCell>{item.price}</TableCell>
+                    <TableCell>{item.quantityAvailable}</TableCell>
                     <TableCell><Button variant="contained" onClick={(e)=>goInventory(item)}>Purchase</Button></TableCell>
                 </TableRow>
             </TableBody>

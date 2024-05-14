@@ -17,9 +17,9 @@ const Locations = (props) => {
     }, []);
 
     return (
-        <FormControl>
-        <Select id = "locs" onChange={props.onChange}>
-            <MenuItem value = {null}> </MenuItem>
+        <FormControl key={props.value}>
+           
+        <Select id = "locs" onChange={props.onChange}  value={props.value}>            
             {locations.map((loc) => (
                 <MenuItem value = {loc.id}> {loc.name}</MenuItem>
             ))}

@@ -19,6 +19,7 @@ import Paper from '@mui/material/Paper';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Locations from '../components/locations';
@@ -75,6 +76,22 @@ const Crates = () => {
             });
         }
     }
+    function confirmEmpty(crate) {
+
+        if (window.confirm("Are you sure you want to empty the contents of crate #" + crate.serialNumber)) {
+            let emptyCrate = {
+                serialNumber: crate.serialNumber,
+                locationId: locationId,
+                quantityAvailable: 0,                
+            }
+            axios.post("/api/crates/", emptyCrate).then(function(response) {
+                loadCrates();
+                setCrate(null);
+            }).catch(function(err) {
+                setErrorMessage(err.response.data);
+            });
+        }
+    }
 
     function saveCrate() {
         if (crate) {
@@ -99,7 +116,13 @@ const Crates = () => {
     }
     function openDialogAsEdit(inCrate) {
         setEditMode(true);
-        openDialog(inCrate)
+        let newCrate = {
+            locationId:locationId,
+            serialNumber: inCrate.serialNumber,
+            inventoryId: inCrate.inventoryId,
+            quantityAvailable: inCrate.quantityAvailable
+        }
+        openDialog(newCrate);
     }
 
     function updateCrateSerialNumber(inCrate, serialNumber) {
@@ -110,18 +133,10 @@ const Crates = () => {
         setCrate(newAdd);
     }
     
-    function updateCrateType(inCrate, inventoryId) {
-        let name = null;
-        for (let index=0; index < inventory.length; index++) {
-            if (inventory[index].id === parseInt(inventoryId)) {
-                name = inventory[index].name;
-            }
-        }
-        
+    function updateCrateType(inCrate, inventoryId) {        
         let newCrate = {
             ...crate,
-            inventoryId: inventoryId,
-            name: name
+            inventoryId: inventoryId            
         };    
         setCrate(newCrate);
         
@@ -168,7 +183,7 @@ const Crates = () => {
             <TableContainer component = {Paper} id = "crates">
                 <Table sx = {{minWidth:650}} >
                 <TableHead>
-                    <TableRow><TableCell>Serial</TableCell><TableCell>Produce</TableCell><TableCell>Quantity</TableCell><TableCell>actions</TableCell>
+                    <TableRow><TableCell>Serial</TableCell><TableCell>Produce</TableCell><TableCell>Quantity</TableCell><TableCell>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -178,8 +193,9 @@ const Crates = () => {
                             <TableCell>{crate.name}</TableCell>
                             <TableCell>{crate.quantityAvailable}</TableCell>
                             <TableCell>
-                                <DeleteIcon onClick={(e) => confirmDelete(crate)}></DeleteIcon>
-                                <EditIcon onClick={(e) => openDialogAsEdit(crate)}></EditIcon>
+                                <Button variant="contained" aria-label="Delete"><DeleteIcon  onClick={(e) => confirmDelete(crate)}></DeleteIcon></Button>
+                                <Button variant="contained" aria-label="Edit"><EditIcon onClick={(e) => openDialogAsEdit(crate)}></EditIcon></Button>
+                                <Button variant="contained" aria-label="Empty"><CheckBoxOutlineBlank onClick={(e) => confirmEmpty(crate)}></CheckBoxOutlineBlank></Button>
                             </TableCell>
                         </TableRow>
                     ))}

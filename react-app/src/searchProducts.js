@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import Search from './components/search';
 import {useNavigate} from 'react-router-dom';
 
-import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const SearchProducts = () => {
 

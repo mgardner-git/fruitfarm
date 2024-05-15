@@ -43,16 +43,14 @@ const crateValidation = {
         serialNumber: Joi.string().required().messages({
             "any.required": "You must enter a serial number"
         }),
-        inventoryId: Joi.number().optional(),
-        quantity: Joi.number().min(0).optional().messages({
+        inventoryId: Joi.number().empty(null).integer().min(0),
+        quantityAvailable: Joi.number().min(0).optional().messages({
             "number.min" : "You must enter a positive price",
             "number.base": "You must enter a valid numeric price"
         }),
         locationId: Joi.number().required().messages({
             "number.required": "You must select a location first"
-        }),
-        quantityAvailable: Joi.number().required(),
-        name: Joi.string().optional()
+        })        
     })
 };
 router.post('/', validate(crateValidation, {},{}), async function(req, res, next) {

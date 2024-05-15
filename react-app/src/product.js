@@ -10,7 +10,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Search from './components/search';
 import {useNavigate} from 'react-router-dom';
 import {useSearchParams} from 'react-router-dom';
 

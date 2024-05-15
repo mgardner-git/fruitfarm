@@ -214,7 +214,7 @@ router.get("/byProduct/:productId/", async function(req,res) {
         inner join crate C on (I.id = C.inventoryId)
         where P.id = ?
         group by I.id
-        order by P.name ASC`;
+        order by I.price ASC`;
 
     console.log(produceSql);
     let produce = await connection.query(produceSql, [productId]);

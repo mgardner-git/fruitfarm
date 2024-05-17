@@ -193,9 +193,9 @@ const Crates = () => {
                             <TableCell>{crate.name}</TableCell>
                             <TableCell>{crate.quantityAvailable}</TableCell>
                             <TableCell>
-                                <Button variant="contained" aria-label="Delete"><DeleteIcon  onClick={(e) => confirmDelete(crate)}></DeleteIcon></Button>
-                                <Button variant="contained" aria-label="Edit"><EditIcon onClick={(e) => openDialogAsEdit(crate)}></EditIcon></Button>
-                                <Button variant="contained" aria-label="Empty"><CheckBoxOutlineBlank onClick={(e) => confirmEmpty(crate)}></CheckBoxOutlineBlank></Button>
+                                <Button variant="contained" title="Delete"><DeleteIcon  onClick={(e) => confirmDelete(crate)}></DeleteIcon></Button>
+                                <Button variant="contained" title="Edit"><EditIcon onClick={(e) => openDialogAsEdit(crate)}></EditIcon></Button>
+                                <Button variant="contained" title="Empty"><CheckBoxOutlineBlank onClick={(e) => confirmEmpty(crate)}></CheckBoxOutlineBlank></Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -232,7 +232,7 @@ const Crates = () => {
                     <Button variant = "contained" onClick = {closeDialog} >Close</Button>
                 </DialogActions>
             </Dialog>
-            <InventoryDialog onSave={saveInventory} item={item} locationId={locationId} closeDialog={closeInventoryDialog}/>
+            <InventoryDialog onSave={saveInventory} item={item} locationId={locationId} closeDialog={closeInventoryDialog} onChange={(e) => setItem({...item})} />
 
             <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}></ErrorDialog>
 

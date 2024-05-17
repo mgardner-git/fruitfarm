@@ -14,7 +14,6 @@ import axios from 'axios';
 
 
 const InventoryDialog = (props) => {
-    const [count, setCount] = useState(0);
     const [produce, setProduce] = useState([]);
     const [product, setProduct] = useState(null);
     
@@ -45,13 +44,13 @@ const InventoryDialog = (props) => {
 
     function updateProduceType(produceId) {
         props.item.produceId = produceId;
-        setCount(count+1);
+        props.onChange();
     }
 
     
     function updatePrice(newPrice) {
         props.item.price = newPrice;
-        setCount(count+1);
+        props.onChange();
     }
     function openAddProduceDialog() {
         setProduct({});
@@ -75,15 +74,14 @@ const InventoryDialog = (props) => {
         <Dialog open={props.item != null} id = "inventoryDialog"  onClose={props.closeDialog}>
         <DialogTitle>Inventory</DialogTitle>
         {props.item && 
-        <DialogContent>
+        <DialogContent>            
             <div class="gridForm">
                 {props.item.id && 
                     <>
                         <label>ID:</label>
                         <span>{props.item.id}</span>
                     </>
-                }
-                
+                }                
                 <label>Type:</label>
                 {props.item.id == null?
                     <div>        
@@ -98,7 +96,7 @@ const InventoryDialog = (props) => {
                     <span>{props.item.name}</span>
                 }
                 <label>Price:</label>               
-                <input type = "number" value = {props.item.price ? props.item.price.slice(1):0} step = ".01" onChange={(e) => updatePrice(e.target.value)} />
+                <input type = "number" value = {props.item.price} step = ".01" onChange={(e) => updatePrice(e.target.value)} />
             </div>
         </DialogContent>
         }

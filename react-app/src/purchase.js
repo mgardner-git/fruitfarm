@@ -27,9 +27,6 @@ const Purchase = () => {
   const [errors, setErrors] = useState([]);  //error per product, for odering more then available
   const [search, setSearch] = useState(null);
   
-//navigate("/purchase?location=" + item.locationId + "&search=" + item.name); 
-  
-
   useEffect(() => {
     const paramLoc  = searchParams.get("location");
     const paramSearch = searchParams.get("search");
@@ -143,7 +140,7 @@ const Purchase = () => {
 
            <div class = "controls"> 
               <label htmlFor="locations">Locations:</label>
-              <Locations value = {myLocation} onChange = {(e) => setMyLocation(e.target.value)}></Locations>
+              <Locations value = {myLocation} onChange = {(e) => setMyLocation(e.target.value)}></Locations>            
               <Search value={search} onBlur={(e) => setSearch(e.target.value)}/>
            </div>      
            {myLocation &&     

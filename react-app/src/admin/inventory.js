@@ -58,7 +58,8 @@ const Inventory = () => {
         else {
             setItem({                
                 ...inItem,
-                locationId: locationId
+                locationId: locationId,
+                price: inItem.price.slice(1)
             });
         }
     }
@@ -117,7 +118,7 @@ const Inventory = () => {
             </Table>
             </TableContainer>
             <span>{item!=null}</span>
-            <InventoryDialog onSave={saveInventory} item={item} locationId={locationId} closeDialog={closeDialog}/>
+            <InventoryDialog onChange={(e) => setItem({...item})} onSave={saveInventory} item={item} locationId={locationId} closeDialog={closeDialog}/>
             <ErrorDialog errorMessage = {errorMessage} close = {closeErrorDialog}/>
         </div>
     </ProtectedRoute>
